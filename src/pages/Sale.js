@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { CustomerFormat } from "../components/sale/CustomerFormat";
-import { Order } from "../components/sale/Order";
 import { SelectItem } from "../components/sale/SelectItem";
 
 export const Sale = () => {
@@ -30,9 +29,6 @@ export const Sale = () => {
       </div>
       <div>
         <SelectItem search={search}/>
-      </div>
-      <div>
-        <Order />
       </div>
     </div>
   );
