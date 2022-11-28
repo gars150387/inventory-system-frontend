@@ -27,18 +27,23 @@ export const FormatToFeedStock = () => {
 
   const handleSubmitInfo = async (event) => {
     event.preventDefault();
-    apiBase.post("/item/new_item", {
-      name: initialForm.nombre,
-      description:{
-        size: initialForm.nombre,
-        color: initialForm.color,
-        brand: initialForm.marca,
-        resume: initialForm.descripcion,
-      },
-        cost: initialForm.costo,
-        quantity: initialForm.cantidad,
-        price: initialForm.precio
+    const response = await apiBase.post("/item/new_item", {
+      name: nombre,
+      size: tamano,
+      color: color,
+      brand: marca,
+      resume: `${descripcion}, ${nombre}, ${tamano}, ${color}, ${marca}`,
+      cost: costo,
+      quantity: cantidad,
+      price: precio,
     });
+    if (response) {
+      console.log(
+        "🚀 ~ file: FormatToFeedStock.js ~ line 43 ~ handleSubmitInfo ~ response",
+        response
+      );
+      alert("Item agregado");
+    }
   };
 
   return (
@@ -80,7 +85,7 @@ export const FormatToFeedStock = () => {
           <label>Precio</label>
           <input name="precio" value={precio} onChange={onInputChange} />
         </div>
-          <button type="submit">Agredar a inventario</button>
+        <button type="submit">Agredar a inventario</button>
       </form>
     </div>
   );

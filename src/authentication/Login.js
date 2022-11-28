@@ -1,7 +1,7 @@
 import { apiBase } from "../components/api/Api";
 import { useForm } from "../hooks/useForm";
 import "../style/component/Login.css";
-import {useDispatch} from 'react-redux'
+import { useDispatch } from "react-redux";
 import { onAddNewAdminUser } from "../store/slices/adminSlice";
 import { useNavigate } from "react-router";
 
@@ -11,12 +11,12 @@ const loginFormFields = {
 };
 
 export const Login = () => {
-  const dispatch = useDispatch();  
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     loginEmail,
     loginPassword,
-    onInputCHange: onloginInputChange,
+    onInputChange: onloginInputChange,
   } = useForm(loginFormFields);
   const onSubmitLogin = async (event) => {
     event.preventDefault();
@@ -25,20 +25,25 @@ export const Login = () => {
         email: loginEmail,
         password: loginPassword,
       });
-      
+
       if (response) {
-      console.log("response", response)
-        navigate("/pricing")
+        console.log("response", response);
+        navigate("/pricing");
       }
-      dispatch( onAddNewAdminUser({
-        name:response.data.name,
-        email:response.data.email,
-        token:response.data.token,
-        iud:response.data.uid,
-        role:response.data.role,
-      }))
+      dispatch(
+        onAddNewAdminUser({
+          name: response.data.name,
+          email: response.data.email,
+          token: response.data.token,
+          iud: response.data.uid,
+          role: response.data.role,
+        })
+      );
     } catch (error) {
-      console.log("🚀 ~ file: Login.js ~ line 29 ~ onSubmitLogin ~ error", error)
+      console.log(
+        "🚀 ~ file: Login.js ~ line 29 ~ onSubmitLogin ~ error",
+        error
+      );
     }
   };
 

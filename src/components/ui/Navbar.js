@@ -45,7 +45,7 @@ export const Navbar = () => {
             {adminUser.token === "" && (
               <NavLink to="/">
                 <li className="nav-item">
-                  <a className="nav-link active" aria-current="page" href="/">
+                  <a className="nav-link active" aria-current="page">
                     Inicio
                   </a>
                 </li>
@@ -56,16 +56,12 @@ export const Navbar = () => {
               <>
                 <NavLink to="/sale">
                   <li className="nav-item">
-                    <a className="nav-link" href="/sale">
-                      Venta
-                    </a>
+                    <a className="nav-link">Venta</a>
                   </li>
                 </NavLink>
                 <NavLink to="/pricing">
                   <li className="nav-item">
-                    <a className="nav-link" href="/pricing">
-                      Precios
-                    </a>
+                    <a className="nav-link">Precios</a>
                   </li>
                 </NavLink>
               </>
@@ -75,29 +71,26 @@ export const Navbar = () => {
               <>
                 <NavLink to="/register">
                   <li className="nav-item">
-                    <a className="nav-link" href="/register">
-                      Nuevo Usuario
-                    </a>
+                    <a className="nav-link">Nuevo Usuario</a>
                   </li>
                 </NavLink>
                 <NavLink to="/feed_stock">
                   <li className="nav-item">
-                    <a className="nav-link" href="/feed_stock">
-                      Ingresar Inventario
-                    </a>
+                    <a className="nav-link">Ingresar Inventario</a>
                   </li>
                 </NavLink>
               </>
             )}
             {adminUser.token && (
               <>
+                <li className="nav-item">
+                  <a onClick={handleSignOut} className="nav-link">
+                    <strong>{adminUser.name}</strong>
+                  </a>
+                </li>
                 <NavLink to="/">
                   <li className="nav-item">
-                    <a
-                      onClick={handleSignOut}
-                      className="nav-link"
-                      href="/sale"
-                    >
+                    <a onClick={handleSignOut} className="nav-link">
                       Cerrar sesion
                     </a>
                   </li>

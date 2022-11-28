@@ -1,9 +1,7 @@
 import Swal from "sweetalert2";
-import { useDispatch } from 'react-redux'
 import { apiBase } from "../components/api/Api";
 import { useForm } from "../hooks/useForm";
 import "../style/component/Login.css";
-import { onAddNewAdminUser } from "../store/slices/adminSlice";
 import { useNavigate } from "react-router";
 
 const registerFormFields = {
@@ -11,38 +9,42 @@ const registerFormFields = {
   registerEmail: "",
   registerPassword: "",
   registerPassword2: "",
+  registerRole:""
 };
 
 export const Register = () => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
   const {
     registerName,
     registerEmail,
     registerPassword,
     registerPassword2,
-    onInputCHange: onRegisterInputChange,
+    registerRole,
+    onInputChange: onRegisterInputChange,
   } = useForm(registerFormFields);
 
-  const onSubmitRegister = (event) => {
+  const onSubmitRegister = async(event) => {
     event.preventDefault();
-
-    if (registerPassword !== registerPassword2) {
+try {
+  if (registerPassword !== registerPassword2) {
       Swal.fire("error", "Passwords must match", "error");
       return;
     } else {
-      apiBase.post("/admin/new_admin_user", {
+      const response = await apiBase.post("/admin/new_admin_user", {
         name: registerName,
         email: registerEmail,
         password: registerPassword,
-        role:"Vendedor"
+        role: registerRole,
       });
-      dispatch(onAddNewAdminUser({
-        name:registerName,
-        email:registerEmail,
-      }))
-      navigate("/pricing")
+      if( response ) {
+      navigate("/pricing");
+      }
     }
+} catch (error) {
+  console.log("🚀 ~ file: Register.js ~ line 34 ~ onSubmitRegister ~ error", error)
+  Swal.fire("error", `${error.response.data.msg}`, "error")
+}
+    
   };
 
   return (
@@ -90,6 +92,21 @@ export const Register = () => {
                 value={registerPassword2}
                 onChange={onRegisterInputChange}
               />
+            </div>
+            <div className="form-group mb-2">
+              <select
+                type="text"
+                className="form-control"
+                placeholder="Permiso"
+                name="registerRole"
+                // value={registerRole}
+                onChange={onRegisterInputChange}
+              >
+                <option defaultValue>Selecciona el role</option>
+                <option value="Vendedor">Vendedor</option>
+                <option value="Encargado">Encargado</option>
+                <option value="Administrador">Administrador</option>
+              </select>
             </div>
 
             <div className="d-grid gap-2">
