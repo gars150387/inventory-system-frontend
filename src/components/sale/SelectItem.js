@@ -5,8 +5,10 @@ import { apiBase } from "../api/Api";
 export const SelectItem = ({ search }) => {
   const [receivedData, setReceivedData] = useState([]);
   const [addItem, setAddItem] = useState([]);
+  const [quantitySelected, setQuantitySelected] = useState("");
   const [statusDisplayInput, setStatusDisplayInput] = useState(false);
   const { adminUser } = useSelector((state) => state.admin);
+
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
     if (response) {
@@ -24,24 +26,15 @@ export const SelectItem = ({ search }) => {
     }
   };
 
-  const selectIndividualQuantity = async (_id) => {
-    let select = "";
-
-    if (_id) {
-      console.log(
-        "🚀 ~ file: SelectItem.js ~ line 29 ~ selectIndividualQuantity ~ _id",
-        _id
-      );
-      addItem?.map((item) => {
+  const selectIndividualQuantity = async ({ _id, quantitySelected }) => {
+    addItem?.map((item) => {
+      if (item._id === _id) {
+        item.quantity = quantitySelected;
         return {
           ...item,
-          quantitySelected:
-            item._id === _id
-              ? setStatusDisplayInput(true)
-              : setStatusDisplayInput(false),
         };
-      });
-    }
+      }
+    });
   };
   const handleSubmitOrder = async (qty) => {};
   return (
@@ -63,27 +56,31 @@ export const SelectItem = ({ search }) => {
           </tr>
         </thead>
         <tbody>
-          {receivedData?.filter((item) =>
-        item.resume.toLowerCase().includes(search.toLowerCase())
-           ).map((item) => {
-            return (
-              <>
-                <tr key={item._id}>
-                  <td>{item.name}</td>
-                  <td>{item.brand}</td>
-                  <td>{item.color}</td>
-                  <td>{item.size}</td>
-                  <td>{item.resume}</td>
-                  <td>{item.quantity}</td>
-                  {adminUser.role === "Administrador" && <td>{item.cost}</td>}
-                  <td>{item.price}</td>
-                  <td>
-                    <button onClick={() => addItemTocart(item)}>Agregar</button>
-                  </td>
-                </tr>
-              </>
-            );
-          })}
+          {receivedData
+            ?.filter((item) =>
+              item.resume.toLowerCase().includes(search.toLowerCase())
+            )
+            .map((item) => {
+              return (
+                <>
+                  <tr key={item._id}>
+                    <td>{item.name}</td>
+                    <td>{item.brand}</td>
+                    <td>{item.color}</td>
+                    <td>{item.size}</td>
+                    <td>{item.resume}</td>
+                    <td>{item.quantity}</td>
+                    {adminUser.role === "Administrador" && <td>{item.cost}</td>}
+                    <td>{item.price}</td>
+                    <td>
+                      <button onClick={() => addItemTocart(item)}>
+                        Agregar
+                      </button>
+                    </td>
+                  </tr>
+                </>
+              );
+            })}
         </tbody>
       </table>
       <div>
@@ -160,11 +157,6 @@ export const SelectItem = ({ search }) => {
                     Precio: <strong>($){price}</strong>
                   </label>
                 </div>
-                {/* <div style={{ width: "14%", margin: "0 2%" }}>
-                  <label>
-                    Precio: <strong>($){price * qty}</strong>
-                  </label>
-                </div> */}
                 <div
                   style={{
                     width: "14%",
@@ -173,19 +165,22 @@ export const SelectItem = ({ search }) => {
                     alignItems: "center",
                   }}
                 >
-                  <button onClick={() => selectIndividualQuantity(_id)}>
+                  <input
+                    name="quantitySelected"
+                    value={quantitySelected}
+                    onChange={(event) =>
+                      setQuantitySelected(event.target.value)
+                    }
+                    placeholder="Qty"
+                    style={{ width: "30%" }}
+                  />
+                  <button
+                    onClick={() =>
+                      selectIndividualQuantity({ _id, quantitySelected })
+                    }
+                  >
                     Agregar cantidad
                   </button>
-
-                  {statusDisplayInput === true ? (
-                    <input
-                      // value={qty}
-                      name=""
-                      // onChange={(event) => setQty(event.target.value)}
-                      placeholder="Qty"
-                      style={{ width: "30%" }}
-                    />
-                  ) : null}
                 </div>
               </div>
             </div>
