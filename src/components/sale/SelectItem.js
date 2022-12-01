@@ -2,11 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { apiBase } from "../api/Api";
 
-export const SelectItem = ({ search }) => {
+let objItem = {
+  name: "",
+  brand: "",
+  color: "",
+  size: "",
+  resume: "",
+  quantity: "",
+};
+export const SelectItem = ({ search, clientName }) => {
   const [receivedData, setReceivedData] = useState([]);
   const [addItem, setAddItem] = useState([]);
   const [quantitySelected, setQuantitySelected] = useState("");
-  const [statusDisplayInput, setStatusDisplayInput] = useState(false);
   const { adminUser } = useSelector((state) => state.admin);
 
   const callApiInventoryResume = async () => {
@@ -20,23 +27,30 @@ export const SelectItem = ({ search }) => {
   }, []);
 
   const addItemTocart = async (item) => {
-    const listOfItemAdded = [...addItem, item];
-    if (listOfItemAdded !== []) {
-      setAddItem(listOfItemAdded);
+    if (quantitySelected > item.quantity)
+      return alert("No hay suficiente en existencia");
+    objItem = item;
+    objItem.quantity = quantitySelected;
+    if (objItem.quantity !== "") {
+      const listOfItemAdded = [...addItem, objItem];
+      if (listOfItemAdded !== []) {
+        setAddItem(listOfItemAdded);
+        setQuantitySelected("");
+      }
     }
   };
 
-  const selectIndividualQuantity = async ({ _id, quantitySelected }) => {
-    addItem?.map((item) => {
-      if (item._id === _id) {
-        item.quantity = quantitySelected;
-        return {
-          ...item,
-        };
-      }
-    });
-  };
-  const handleSubmitOrder = async (qty) => {};
+  const handleDeleteItem = (_id) => {
+    let itemDeleted = addItem.filter(item => item._id !== _id)
+    if(itemDeleted){
+      setAddItem(itemDeleted)
+    }
+  }
+
+  const handleProcessOrder = async() => {
+    
+  }
+
   return (
     <>
       <table className="table table-striped">
@@ -52,6 +66,7 @@ export const SelectItem = ({ search }) => {
               <th scope="col">Costo ($)</th>
             )}
             <th scope="col">Precio ($)</th>
+            <th scope="col">Cantidad</th>
             <th scope="col">Vender</th>
           </tr>
         </thead>
@@ -72,6 +87,20 @@ export const SelectItem = ({ search }) => {
                     <td>{item.quantity}</td>
                     {adminUser.role === "Administrador" && <td>{item.cost}</td>}
                     <td>{item.price}</td>
+                    <td>
+                      <input
+                        style={{
+                          width: "20%",
+                          padding:"1px"
+                        }}
+                        placeholder="Qty"
+                        name="quantitySelected"
+                        value={quantitySelected}
+                        onChange={(event) =>
+                          setQuantitySelected(event.target.value)
+                        }
+                      />
+                    </td>
                     <td>
                       <button onClick={() => addItemTocart(item)}>
                         Agregar
@@ -99,93 +128,94 @@ export const SelectItem = ({ search }) => {
           <label>
             Cantidad de productos #: <strong>{addItem.length}</strong>
           </label>
-          <button onClick={handleSubmitOrder}>Procesar orden</button>
+          <button onClick={handleProcessOrder}>Procesar orden</button>
         </div>
-        {addItem?.map(({ _id, name, brand, size, color, resume, price }) => {
-          return (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  width: "98%",
-                  height: "13vh",
-                  margin: "1% auto",
-                  borderTop: "dashed 1px #212529",
-                  borderBottom: "dashed 1px #212529",
-                }}
-                key={_id}
-              >
-                <div style={{ width: "14%", margin: "0 2%" }}>
-                  <label>
-                    Nombre: <strong>{name}</strong>
-                  </label>
-                </div>
-                <div style={{ width: "14%", margin: "0 2%" }}>
-                  <label>
-                    Marca: <strong>{brand}</strong>
-                  </label>
-                </div>
-                <div style={{ width: "14%", margin: "0 2%" }}>
-                  <label>
-                    Color: <strong>{color}</strong>
-                  </label>
-                </div>
-                <div style={{ width: "14%", margin: "0 2%" }}>
-                  <label>
-                    Tamano: <strong>{size}</strong>
-                  </label>
-                </div>
+        {addItem?.map(
+          ({ _id, name, brand, size, color, resume, price, quantity }) => {
+            return (
+              <div style={{ display: "flex", alignItems: "center"}}>
                 <div
                   style={{
-                    width: "14%",
-                    margin: "0 2%",
                     display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <label>
-                    Descripcion:
-                    <p>
-                      <strong>{resume}</strong>
-                    </p>
-                  </label>
-                </div>
-                <div style={{ width: "14%", margin: "0 2%" }}>
-                  <label>
-                    Precio: <strong>($){price}</strong>
-                  </label>
-                </div>
-                <div
-                  style={{
-                    width: "14%",
-                    display: "flex",
-                    justifyContent: "center",
+                    justifyContent: "space-between",
                     alignItems: "center",
+                    width: "98%",
+                    height: "13vh",
+                    margin: "1% auto",
+                    borderTop: "dashed 1px #212529",
+                    borderBottom: "dashed 1px #212529",
+                    
                   }}
+                  key={_id}
                 >
-                  <input
-                    name="quantitySelected"
-                    value={quantitySelected}
-                    onChange={(event) =>
-                      setQuantitySelected(event.target.value)
-                    }
-                    placeholder="Qty"
-                    style={{ width: "30%" }}
-                  />
-                  <button
-                    onClick={() =>
-                      selectIndividualQuantity({ _id, quantitySelected })
-                    }
+                  <div style={{ width: "5%", margin: "0 2%" }}>
+                    <label>
+                      Nombre: <strong>{name}</strong>
+                    </label>
+                  </div>
+                  <div style={{ width: "5%", margin: "0 2%" }}>
+                    <label>
+                      Marca: <strong>{brand}</strong>
+                    </label>
+                  </div>
+                  <div style={{ width: "5%", margin: "0 2%" }}>
+                    <label>
+                      Color: <strong>{color}</strong>
+                    </label>
+                  </div>
+                  <div style={{ width: "5%", margin: "0 2%" }}>
+                    <label>
+                      Tamano: <strong>{size}</strong>
+                    </label>
+                  </div>
+                  <div
+                    style={{
+                      width: "25%",
+                      margin: "0 2%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
                   >
-                    Agregar cantidad
-                  </button>
+                    <label>
+                      Descripcion:
+                      <p>
+                        <strong>{resume}</strong>
+                      </p>
+                    </label>
+                  </div>
+                  <div style={{ width: "5%", margin: "0 2%" }}>
+                    <label>
+                      Precio Unitario <strong>($){price}</strong>
+                    </label>
+                  </div>
+                  <div style={{ width: "5%", margin: "0 2%" }}>
+                    <label>
+                      Cantidad seleccionada: <strong>{quantity}</strong>
+                    </label>
+                    <strong>
+                      <i className="bi bi-pencil-square" />
+                    </strong>
+                  </div>
+                  <div style={{ width: "5%", margin: "0 2%" }}>
+                    <label>
+                      Total a pagar por item:{" "}
+                      <strong>($){price * parseInt(quantity)}</strong>
+                    </label>
+                  </div>
+                  <div style={{ width: "2%", margin: "0 2%", color: "#000" }}>
+                    <button onClick={() => handleDeleteItem(_id)}>
+                      Eliminar
+                      <i
+                        style={{ color: "#212529" }}
+                        className="bi bi-trash3"
+                      />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          }
+        )}
       </div>
     </>
   );
