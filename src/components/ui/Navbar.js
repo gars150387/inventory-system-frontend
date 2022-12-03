@@ -79,6 +79,11 @@ export const Navbar = () => {
                     <a className="nav-link">Ingresar Inventario</a>
                   </li>
                 </NavLink>
+                <NavLink to="/all-orders">
+                  <li className="nav-item">
+                    <a className="nav-link">Todas las Ventas</a>
+                  </li>
+                </NavLink>
               </>
             )}
             {adminUser.token && (

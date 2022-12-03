@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useInterval } from "interval-hooks";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
+import { useOrder } from "../../hooks/useOrder";
 import { apiBase } from "../api/Api";
+import { Pagination } from "../helper/Pagination";
 
 let objItem = {
   name: "",
@@ -10,11 +15,28 @@ let objItem = {
   resume: "",
   quantity: "",
 };
-export const SelectItem = ({ search, clientName }) => {
+export const SelectItem = ({ search, salePerson }) => {
+  console.log("🚀 ~ file: SelectItem.js:19 ~ SelectItem ~ salePerson", salePerson)
   const [receivedData, setReceivedData] = useState([]);
   const [addItem, setAddItem] = useState([]);
   const [quantitySelected, setQuantitySelected] = useState("");
   const { adminUser } = useSelector((state) => state.admin);
+  const { newOrderCall } = useOrder();
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsRenderedPerPage] = useState(10);
+
+  const indexOfLastItemsRendered = currentPage * itemsRenderedPerPage;
+  const indexOfFirstItemsRendered =
+    indexOfLastItemsRendered - itemsRenderedPerPage;
+  const currentItemsRendered = receivedData.slice(
+    indexOfFirstItemsRendered,
+    indexOfLastItemsRendered
+  );
+
+  const paginate = (pageNumbers) => {
+    setCurrentPage(pageNumbers);
+  };
 
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
@@ -25,6 +47,14 @@ export const SelectItem = ({ search, clientName }) => {
   useEffect(() => {
     callApiInventoryResume();
   }, []);
+
+  const initialStock = useRef();
+  useInterval(() => {
+    callApiInventoryResume();
+    if (addItem.length !== initialStock.length) {
+      initialStock.current = receivedData;
+    }
+  }, 5_00);
 
   const addItemTocart = async (item) => {
     if (quantitySelected > item.quantity)
@@ -41,16 +71,68 @@ export const SelectItem = ({ search, clientName }) => {
   };
 
   const handleDeleteItem = (_id) => {
-    let itemDeleted = addItem.filter(item => item._id !== _id)
-    if(itemDeleted){
-      setAddItem(itemDeleted)
+    let itemDeleted = addItem.filter((item) => {
+      return item._id !== _id;
+    });
+    if (itemDeleted) {
+      setAddItem(itemDeleted);
     }
-  }
+  };
 
-  const handleProcessOrder = async() => {
-    
-  }
+  let totalToDisplay;
+  const sumPriceInOrder = async () => {
+    const initalState = 0;
+    let totalAccru = [];
+    const accru = new Map();
+    addItem?.map((item, index) => {
+      accru.set(index, item.price * item.quantity);
+    });
+    for (const value of accru.values()) {
+      totalAccru.push(value);
+    }
+    return (totalToDisplay = totalAccru.reduce(
+      (acc, val) => acc + val,
+      initalState
+    ));
+  };
+  sumPriceInOrder();
 
+  const modifyItemQuantityAfterOrder = async () => {
+    let referenceData = initialStock.current;
+    addItem?.map((item) => {
+      for (let i = 0; i < referenceData.length; i++) {
+        if (item._id === referenceData[i]._id) {
+          let total = referenceData[i].quantity - item.quantity;
+          apiBase.put(`/item/edit-item-quantity/${item._id}`, {
+            ...receivedData[i],
+            quantity: total,
+          });
+        }
+      }
+    });
+  };
+  const handleProcessOrder = async () => {
+    Swal.fire({
+      title: "Favor ingresar el nombre del cliente",
+      input: "text",
+      inputAttributes: {
+        autocapitalize: "off",
+      },
+      showCancelButton: true,
+      confirmButtonText: "Procesar",
+      showLoaderOnConfirm: true,
+      preConfirm: async (cliente) => {
+        try {
+          await newOrderCall({ cliente, addItem, totalToDisplay, salePerson });
+          await modifyItemQuantityAfterOrder();
+          setAddItem([]);
+          navigate(`/receipt`);
+        } catch (error) {
+          Swal.showValidationMessage(`Request failed: ${error}`);
+        }
+      },
+    });
+  };
   return (
     <>
       <table className="table table-striped">
@@ -71,10 +153,8 @@ export const SelectItem = ({ search, clientName }) => {
           </tr>
         </thead>
         <tbody>
-          {receivedData
-            ?.filter((item) =>
-              item.resume.toLowerCase().includes(search.toLowerCase())
-            )
+          {currentItemsRendered
+            ?.filter((item) => item.resume.includes(search))
             .map((item) => {
               return (
                 <>
@@ -91,7 +171,7 @@ export const SelectItem = ({ search, clientName }) => {
                       <input
                         style={{
                           width: "20%",
-                          padding:"1px"
+                          padding: "1px",
                         }}
                         placeholder="Qty"
                         name="quantitySelected"
@@ -111,6 +191,11 @@ export const SelectItem = ({ search, clientName }) => {
               );
             })}
         </tbody>
+        <Pagination
+          childrenRenderedPerPage={itemsRenderedPerPage}
+          totalChildren={receivedData.length}
+          paginate={paginate}
+        />
       </table>
       <div>
         <h5>Orden en progreso</h5>
@@ -129,11 +214,14 @@ export const SelectItem = ({ search, clientName }) => {
             Cantidad de productos #: <strong>{addItem.length}</strong>
           </label>
           <button onClick={handleProcessOrder}>Procesar orden</button>
+          <label>
+            Total a pagar en orden: <strong>${totalToDisplay}</strong>
+          </label>
         </div>
         {addItem?.map(
           ({ _id, name, brand, size, color, resume, price, quantity }) => {
             return (
-              <div style={{ display: "flex", alignItems: "center"}}>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
                     display: "flex",
@@ -144,7 +232,6 @@ export const SelectItem = ({ search, clientName }) => {
                     margin: "1% auto",
                     borderTop: "dashed 1px #212529",
                     borderBottom: "dashed 1px #212529",
-                    
                   }}
                   key={_id}
                 >
@@ -198,7 +285,7 @@ export const SelectItem = ({ search, clientName }) => {
                   </div>
                   <div style={{ width: "5%", margin: "0 2%" }}>
                     <label>
-                      Total a pagar por item:{" "}
+                      responseId Total a pagar por item:{" "}
                       <strong>($){price * parseInt(quantity)}</strong>
                     </label>
                   </div>

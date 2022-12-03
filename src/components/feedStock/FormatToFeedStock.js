@@ -1,6 +1,7 @@
 import React from "react";
 import { useForm } from "../../hooks/useForm";
 import { apiBase } from "../api/Api";
+import './formatFeed.css'
 
 const initialForm = {
   nombre: "",
@@ -38,10 +39,6 @@ export const FormatToFeedStock = () => {
       price: precio,
     });
     if (response) {
-      console.log(
-        "🚀 ~ file: FormatToFeedStock.js ~ line 43 ~ handleSubmitInfo ~ response",
-        response
-      );
       alert("Item agregado");
     }
   };
@@ -49,23 +46,23 @@ export const FormatToFeedStock = () => {
   return (
     <div className="container-form-page">
       <form onClick={handleSubmitInfo} className="container-form">
-        <div>
+        <div className="input-field">
           <label>Nombre</label>
           <input name="nombre" value={nombre} onChange={onInputChange} />
         </div>
-        <div>
+        <div className="input-field">
           <label>Tamano</label>
           <input name="tamano" value={tamano} onChange={onInputChange} />
         </div>
-        <div>
+        <div className="input-field">
           <label>color</label>
           <input name="color" value={color} onChange={onInputChange} />
         </div>
-        <div>
+        <div className="input-field">
           <label>Marca</label>
           <input name="marca" value={marca} onChange={onInputChange} />
         </div>
-        <div>
+        <div className="input-field">
           <label>Descripcion</label>
           <input
             name="descripcion"
@@ -73,15 +70,15 @@ export const FormatToFeedStock = () => {
             onChange={onInputChange}
           />
         </div>
-        <div>
+        <div className="input-field">
           <label>Costo</label>
           <input name="costo" value={costo} onChange={onInputChange} />
         </div>
-        <div>
+        <div className="input-field">
           <label>Cantidad</label>
           <input name="cantidad" value={cantidad} onChange={onInputChange} />
         </div>
-        <div>
+        <div className="input-field">
           <label>Precio</label>
           <input name="precio" value={precio} onChange={onInputChange} />
         </div>

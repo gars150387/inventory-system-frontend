@@ -6,6 +6,8 @@ import { Home } from "../pages/Home";
 import { Pricing } from "../pages/Pricing";
 import { Sale } from "../pages/Sale";
 import { IngresarInventario } from "../pages/IngresarInventario";
+import { Order } from "../pages/Order";
+import { SalePerPeriod } from "../pages/SalePerPeriod";
 
 export const RouteMain = () => {
   const { adminUser } = useSelector((state) => state.admin);
@@ -16,9 +18,13 @@ export const RouteMain = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/sale" element={<Sale />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/receipt" element={<Order />} />
+          <Route path="/register/:id" element={<Register />} />
           {adminUser.role === "Administrador" ? (
+            <>
           <Route path="/feed_stock" element={<IngresarInventario />} />
+          <Route path="/all-orders" element={<SalePerPeriod />} />
+          </>
           ) : null}
         </>
       ) : (
