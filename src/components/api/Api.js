@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const apiBase = axios.create({
-  baseURL: "https://rosa-mistica-backend.netlify.app/api",
+  baseURL: "https://rosa-mistica-app-backend.herokuapp.com/api",
 });
 
 //TODO: config interceptors
