@@ -1,7 +1,6 @@
 import { useInterval } from "interval-hooks";
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { useOrder } from "../../hooks/useOrder";
 import { apiBase } from "../api/Api";
@@ -32,13 +31,11 @@ export const SelectItem = ({ search, salePerson }) => {
     indexOfLastItemsRendered
   );
 
-  const { _id, clientName, order, time, total } =
-    currentOrderProcessed;
+  const { _id, clientName, order, time, total } = currentOrderProcessed;
 
   const paginate = (pageNumbers) => {
     setCurrentPage(pageNumbers);
   };
-
 
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
@@ -100,7 +97,7 @@ export const SelectItem = ({ search, salePerson }) => {
     let totalAccru = [];
     const accru = new Map();
     addItem?.map((item, index) => {
-      accru.set(index, item.price * item.quantity);
+      return accru.set(index, item.price * item.quantity);
     });
     for (const value of accru.values()) {
       totalAccru.push(value);
@@ -118,7 +115,7 @@ export const SelectItem = ({ search, salePerson }) => {
     let totalItemAccru = [];
     const accru = new Map();
     addItem?.map((item, index) => {
-      accru.set(index, parseInt(item.quantity));
+      return accru.set(index, parseInt(item.quantity));
     });
     for (const value of accru.values()) {
       totalItemAccru.push(value);
@@ -142,6 +139,7 @@ export const SelectItem = ({ search, salePerson }) => {
           });
         }
       }
+      return;
     });
   };
   const handleProcessOrder = async () => {
