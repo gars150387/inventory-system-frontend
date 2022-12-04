@@ -129,18 +129,17 @@ export const SelectItem = ({ search, salePerson }) => {
 
   const modifyItemQuantityAfterOrder = async () => {
     let referenceData = initialStock.current;
-    addItem?.map((item) => {
+    for (let j = 0; j < addItem.length; j++) {
       for (let i = 0; i < referenceData.length; i++) {
-        if (item._id === referenceData[i]._id) {
-          let total = referenceData[i].quantity - item.quantity;
-          apiBase.put(`/item/edit-item-quantity/${item._id}`, {
+        if (addItem[i]._id === referenceData[i]._id) {
+          let total = referenceData[i].quantity - addItem[i].quantity;
+          apiBase.put(`/item/edit-item-quantity/${addItem[j]._id}`, {
             ...receivedData[i],
             quantity: total,
           });
         }
       }
-      return;
-    });
+    }
   };
   const handleProcessOrder = async () => {
     if (salePerson !== "") {
