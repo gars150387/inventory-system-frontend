@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { useOrder } from "../../hooks/useOrder";
 import { apiBase } from "../api/Api";
 import { Pagination } from "../helper/Pagination";
+import { ReceiptFormat } from "./ReceiptFormat";
 
 let objItem = {
   name: "",
@@ -16,13 +17,10 @@ let objItem = {
   quantity: "",
 };
 export const SelectItem = ({ search, salePerson }) => {
-  console.log("🚀 ~ file: SelectItem.js:19 ~ SelectItem ~ salePerson", salePerson)
   const [receivedData, setReceivedData] = useState([]);
   const [addItem, setAddItem] = useState([]);
-  const [quantitySelected, setQuantitySelected] = useState("");
   const { adminUser } = useSelector((state) => state.admin);
-  const { newOrderCall } = useOrder();
-  const navigate = useNavigate();
+  const { newOrderCall, currentOrderProcessed, showReceipt } = useOrder();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsRenderedPerPage] = useState(10);
 
@@ -34,9 +32,13 @@ export const SelectItem = ({ search, salePerson }) => {
     indexOfLastItemsRendered
   );
 
+  const { _id, clientName, order, time, total } =
+    currentOrderProcessed;
+
   const paginate = (pageNumbers) => {
     setCurrentPage(pageNumbers);
   };
+
 
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
@@ -57,17 +59,30 @@ export const SelectItem = ({ search, salePerson }) => {
   }, 5_00);
 
   const addItemTocart = async (item) => {
-    if (quantitySelected > item.quantity)
-      return alert("No hay suficiente en existencia");
-    objItem = item;
-    objItem.quantity = quantitySelected;
-    if (objItem.quantity !== "") {
-      const listOfItemAdded = [...addItem, objItem];
-      if (listOfItemAdded !== []) {
-        setAddItem(listOfItemAdded);
-        setQuantitySelected("");
-      }
-    }
+    Swal.fire({
+      title: `${item.name}, ${item.brand}`,
+      input: "text",
+      inputAttributes: {
+        autocapitalize: "off",
+        placeholder: `Agregar cantidad`,
+      },
+      showCancelButton: true,
+      confirmButtonText: "Agregar",
+      showLoaderOnConfirm: true,
+      preConfirm: async (quantity) => {
+        if (quantity > item.quantity)
+          return alert("No hay suficiente en existencia");
+        objItem = item;
+        objItem.quantity = quantity;
+        if (objItem.quantity !== "") {
+          const listOfItemAdded = [...addItem, objItem];
+          if (listOfItemAdded !== []) {
+            setAddItem(listOfItemAdded);
+          }
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    });
   };
 
   const handleDeleteItem = (_id) => {
@@ -97,6 +112,24 @@ export const SelectItem = ({ search, salePerson }) => {
   };
   sumPriceInOrder();
 
+  let totalItemsInOrderToDisplay;
+  const sumItemsInOrder = async () => {
+    const initalState = 0;
+    let totalItemAccru = [];
+    const accru = new Map();
+    addItem?.map((item, index) => {
+      accru.set(index, parseInt(item.quantity));
+    });
+    for (const value of accru.values()) {
+      totalItemAccru.push(value);
+    }
+    return (totalItemsInOrderToDisplay = totalItemAccru.reduce(
+      (acc, val) => acc + val,
+      initalState
+    ));
+  };
+  sumItemsInOrder();
+
   const modifyItemQuantityAfterOrder = async () => {
     let referenceData = initialStock.current;
     addItem?.map((item) => {
@@ -112,26 +145,34 @@ export const SelectItem = ({ search, salePerson }) => {
     });
   };
   const handleProcessOrder = async () => {
-    Swal.fire({
-      title: "Favor ingresar el nombre del cliente",
-      input: "text",
-      inputAttributes: {
-        autocapitalize: "off",
-      },
-      showCancelButton: true,
-      confirmButtonText: "Procesar",
-      showLoaderOnConfirm: true,
-      preConfirm: async (cliente) => {
-        try {
-          await newOrderCall({ cliente, addItem, totalToDisplay, salePerson });
-          await modifyItemQuantityAfterOrder();
-          setAddItem([]);
-          navigate(`/receipt`);
-        } catch (error) {
-          Swal.showValidationMessage(`Request failed: ${error}`);
-        }
-      },
-    });
+    if (salePerson !== "") {
+      Swal.fire({
+        title: "Favor ingresar el nombre del cliente",
+        input: "text",
+        inputAttributes: {
+          autocapitalize: "off",
+        },
+        showCancelButton: true,
+        confirmButtonText: "Procesar",
+        showLoaderOnConfirm: true,
+        preConfirm: async (cliente) => {
+          try {
+            await newOrderCall({
+              cliente,
+              addItem,
+              totalToDisplay,
+              salePerson,
+            });
+            await modifyItemQuantityAfterOrder();
+            setAddItem([]);
+          } catch (error) {
+            Swal.showValidationMessage(`Request failed: ${error}`);
+          }
+        },
+      });
+    } else {
+      alert("Favor selecciona un vendedor antes de procesar la orden");
+    }
   };
   return (
     <>
@@ -148,7 +189,6 @@ export const SelectItem = ({ search, salePerson }) => {
               <th scope="col">Costo ($)</th>
             )}
             <th scope="col">Precio ($)</th>
-            <th scope="col">Cantidad</th>
             <th scope="col">Vender</th>
           </tr>
         </thead>
@@ -167,20 +207,6 @@ export const SelectItem = ({ search, salePerson }) => {
                     <td>{item.quantity}</td>
                     {adminUser.role === "Administrador" && <td>{item.cost}</td>}
                     <td>{item.price}</td>
-                    <td>
-                      <input
-                        style={{
-                          width: "20%",
-                          padding: "1px",
-                        }}
-                        placeholder="Qty"
-                        name="quantitySelected"
-                        value={quantitySelected}
-                        onChange={(event) =>
-                          setQuantitySelected(event.target.value)
-                        }
-                      />
-                    </td>
                     <td>
                       <button onClick={() => addItemTocart(item)}>
                         Agregar
@@ -211,12 +237,16 @@ export const SelectItem = ({ search, salePerson }) => {
           }}
         >
           <label>
-            Cantidad de productos #: <strong>{addItem.length}</strong>
+            Productos: <strong>{addItem.length}</strong>
+          </label>
+          <label>
+            Cantidad de articulos: <strong>{totalItemsInOrderToDisplay}</strong>
+          </label>
+
+          <label>
+            Total a pagar: <strong>${totalToDisplay}</strong>
           </label>
           <button onClick={handleProcessOrder}>Procesar orden</button>
-          <label>
-            Total a pagar en orden: <strong>${totalToDisplay}</strong>
-          </label>
         </div>
         {addItem?.map(
           ({ _id, name, brand, size, color, resume, price, quantity }) => {
@@ -285,7 +315,7 @@ export const SelectItem = ({ search, salePerson }) => {
                   </div>
                   <div style={{ width: "5%", margin: "0 2%" }}>
                     <label>
-                      responseId Total a pagar por item:{" "}
+                      Total a pagar por item:{" "}
                       <strong>($){price * parseInt(quantity)}</strong>
                     </label>
                   </div>
@@ -302,6 +332,18 @@ export const SelectItem = ({ search, salePerson }) => {
               </div>
             );
           }
+        )}
+      </div>
+      <div className={`d-${showReceipt}`}>
+        {currentOrderProcessed !== [] && (
+          <ReceiptFormat
+            _id={_id}
+            clientName={clientName}
+            order={order}
+            salePerson={salePerson}
+            time={time}
+            total={total}
+          />
         )}
       </div>
     </>

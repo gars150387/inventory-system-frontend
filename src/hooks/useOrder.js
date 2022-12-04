@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 export const useOrder = () => {
   const [orderProcessed, setOrderProcessed] = useState(null);
   const [currentOrderProcessed, setCurrentOrderProcessed] = useState([]);
+  const [showReceipt, setShowReceipt] = useState('none')
 
   const newOrderCall = async ({ cliente, addItem, totalToDisplay, salePerson }) => {
     try {
@@ -17,7 +18,8 @@ export const useOrder = () => {
       if (data) {
         console.log("🚀 ~ file: useOrder.js:19 ~ newOrderCall ~ data", data);
         setOrderProcessed(data);
-        setCurrentOrderProcessed(data)
+        setCurrentOrderProcessed(data.order)
+        setShowReceipt('display')
         Swal.fire("", "Orden creada!", "success");
       }
     } catch (error) {
@@ -29,6 +31,7 @@ export const useOrder = () => {
     //*property
     orderProcessed,
     currentOrderProcessed,
+    showReceipt,
 
     //*method
     newOrderCall,

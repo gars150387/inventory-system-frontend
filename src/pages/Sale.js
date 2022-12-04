@@ -60,7 +60,7 @@ export const Sale = () => {
         </div>
         <div>
           <label>
-            <strong>Vendedor #: </strong>
+            <strong>Sesion activa: </strong>
           </label>{" "}
           {adminUser.iud}
         </div>

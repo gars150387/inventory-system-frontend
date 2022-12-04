@@ -16,15 +16,16 @@ export const RouteMain = () => {
       {adminUser.token ? (
         <>
           <Route path="/register" element={<Register />} />
-          <Route path="/pricing" element={<Pricing />} />
+          {/* <Route path="/pricing" element={<Pricing />} /> */}
           <Route path="/sale" element={<Sale />} />
           <Route path="/receipt" element={<Order />} />
           <Route path="/register/:id" element={<Register />} />
-          {adminUser.role === "Administrador" ? (
-            <>
-          <Route path="/feed_stock" element={<IngresarInventario />} />
-          <Route path="/all-orders" element={<SalePerPeriod />} />
-          </>
+          {adminUser.role === "Administrador" && (
+            <Route path="/all-orders" element={<SalePerPeriod />} />
+          )}
+          {adminUser.role === "Administrador" ||
+          adminUser.role === "Encargado" ? (
+            <Route path="/feed_stock" element={<IngresarInventario />} />
           ) : null}
         </>
       ) : (

@@ -40,7 +40,16 @@ export const Navbar = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
         </NavLink>
-        <div className="collapse navbar-collapse" id="navbarNav">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+          }}
+          className="collapse navbar-collapse"
+          id="navbarNav"
+        >
           <ul className="navbar-nav">
             {adminUser.token === "" && (
               <NavLink to="/">
@@ -59,15 +68,16 @@ export const Navbar = () => {
                     <a className="nav-link">Venta</a>
                   </li>
                 </NavLink>
-                <NavLink to="/pricing">
+                {/* <NavLink to="/pricing">
                   <li className="nav-item">
                     <a className="nav-link">Precios</a>
                   </li>
-                </NavLink>
+                </NavLink> */}
               </>
             )}
 
-            {adminUser.role === "Administrador" && (
+            {adminUser.role === "Administrador" ||
+            adminUser.role === "Encargado" ? (
               <>
                 <NavLink to="/register">
                   <li className="nav-item">
@@ -79,12 +89,14 @@ export const Navbar = () => {
                     <a className="nav-link">Ingresar Inventario</a>
                   </li>
                 </NavLink>
-                <NavLink to="/all-orders">
-                  <li className="nav-item">
-                    <a className="nav-link">Todas las Ventas</a>
-                  </li>
-                </NavLink>
               </>
+            ) : null}
+            {adminUser.role === "Administrador" && (
+              <NavLink to="/all-orders">
+                <li className="nav-item">
+                  <a className="nav-link">Todas las Ventas</a>
+                </li>
+              </NavLink>
             )}
             {adminUser.token && (
               <>
