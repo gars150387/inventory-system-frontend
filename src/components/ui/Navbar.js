@@ -25,7 +25,7 @@ export const Navbar = () => {
     <nav className="navbar navbar-expand-lg bg-light">
       <div className="container-fluid">
         <NavLink to="/">
-          <a className="navbar-brand" href="/">
+          <a href="/" className="navbar-brand">
             Rosa Mistica
           </a>
           <button
@@ -54,7 +54,7 @@ export const Navbar = () => {
             {adminUser.token === "" && (
               <NavLink to="/">
                 <li className="nav-item">
-                  <a className="nav-link active" aria-current="page">
+                  <a href="/" className="nav-link active" aria-current="page">
                     Inicio
                   </a>
                 </li>
@@ -65,12 +65,14 @@ export const Navbar = () => {
               <>
                 <NavLink to="/sale">
                   <li className="nav-item">
-                    <a className="nav-link">Venta</a>
+                    <a href="/sale" className="nav-link">
+                      Venta
+                    </a>
                   </li>
                 </NavLink>
                 {/* <NavLink to="/pricing">
                   <li className="nav-item">
-                    <a className="nav-link">Precios</a>
+                    <a href="/" className="nav-link">Precios</a>
                   </li>
                 </NavLink> */}
               </>
@@ -81,12 +83,16 @@ export const Navbar = () => {
               <>
                 <NavLink to="/register">
                   <li className="nav-item">
-                    <a className="nav-link">Nuevo Usuario</a>
+                    <a href="/register" className="nav-link">
+                      Nuevo Usuario
+                    </a>
                   </li>
                 </NavLink>
                 <NavLink to="/feed_stock">
                   <li className="nav-item">
-                    <a className="nav-link">Ingresar Inventario</a>
+                    <a href="/feed_stock" className="nav-link">
+                      Ingresar Inventario
+                    </a>
                   </li>
                 </NavLink>
               </>
@@ -94,20 +100,22 @@ export const Navbar = () => {
             {adminUser.role === "Administrador" && (
               <NavLink to="/all-orders">
                 <li className="nav-item">
-                  <a className="nav-link">Todas las Ventas</a>
+                  <a href="/all-orders" className="nav-link">
+                    Todas las Ventas
+                  </a>
                 </li>
               </NavLink>
             )}
             {adminUser.token && (
               <>
                 <li className="nav-item">
-                  <a onClick={handleSignOut} className="nav-link">
+                  <a href="/" onClick={handleSignOut} className="nav-link">
                     <strong>{adminUser.name}</strong>
                   </a>
                 </li>
                 <NavLink to="/">
                   <li className="nav-item">
-                    <a onClick={handleSignOut} className="nav-link">
+                    <a href="/" onClick={handleSignOut} className="nav-link">
                       Cerrar sesion
                     </a>
                   </li>

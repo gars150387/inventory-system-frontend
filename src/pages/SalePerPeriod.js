@@ -69,15 +69,15 @@ export const SalePerPeriod = () => {
               return (
                 <tr>
                   <th scope="row">{index + 1}</th>
-                  <td scope="col">{order.clientName}</td>
-                  <td scope="col">{order.salePerson}</td>
-                  <td scope="col">${order.total}</td>
-                  <td scope="col">{order.time}</td>
-                  <td scope="col">
+                  <th scope="col">{order.clientName}</th>
+                  <th scope="col">{order.salePerson}</th>
+                  <th scope="col">${order.total}</th>
+                  <th scope="col">{order.time}</th>
+                  <th scope="col">
                     <button onClick={() => setOrderId(order.order)}>
                       Detalle
                     </button>
-                  </td>
+                  </th>
                 </tr>
               );
             })}
