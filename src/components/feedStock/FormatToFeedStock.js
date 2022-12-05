@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "../../hooks/useForm";
 import { apiBase } from "../api/Api";
 import './formatFeed.css'
@@ -14,6 +14,7 @@ const initialForm = {
   precio: "",
 };
 export const FormatToFeedStock = () => {
+  const [inputValues, setInputValues] = useState(initialForm)
   const {
     nombre,
     tamano,
@@ -24,7 +25,7 @@ export const FormatToFeedStock = () => {
     cantidad,
     precio,
     onInputChange,
-  } = useForm(initialForm);
+  } = useForm(inputValues);
 
   const handleSubmitInfo = async (event) => {
     event.preventDefault();
@@ -40,6 +41,16 @@ export const FormatToFeedStock = () => {
     });
     if (response) {
       alert("Item agregado");
+      setInputValues({
+        nombre: "",
+        tamano: "",
+        color: "",
+        marca: "",
+        descripcion: "",
+        costo: "",
+        cantidad: "",
+        precio: "",
+      })
     }
   };
 
