@@ -67,6 +67,37 @@ export const IngresarInventario = () => {
       }
     }
   };
+
+  const handleDeleteItem = async (item) => {
+    for (let i = 0; i < receivedData.length; i++) {
+      if (receivedData[i]._id === item._id) {
+        Swal.fire({
+          title: `Seguro?`,
+          text: `Esta seguro de borrar este item: ${item.name}, ${item.brand}`,
+          input: "text",
+          inputAttributes: {
+            autocapitalize: "off",
+            placeholder: `Cantidad existente: ${item.quantity}`,
+          },
+          showCancelButton: true,
+          confirmButtonText: "Guarda",
+          showLoaderOnConfirm: true,
+          allowOutsideClick: () => !Swal.isLoading(),
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: `${item.name}, ${item.brand}`,
+              text: "Item fue borrado del inventario",
+              preConfirm: async () => {
+                await apiBase.put(`/item/delete-item/${item._id}`);
+              },
+            });
+          }
+        });
+      }
+    }
+  };
+
   return (
     <div>
       <div>
@@ -146,7 +177,7 @@ export const IngresarInventario = () => {
                           <td>
                             <p
                               style={{ cursor: "pointer" }}
-                              onClick={() => handleEditQuantity(item)}
+                              onClick={() => handleDeleteItem(item)}
                             >
                               Eliminar
                             </p>
