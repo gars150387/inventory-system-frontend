@@ -71,29 +71,44 @@ export const IngresarInventario = () => {
   const handleDeleteItem = async (item) => {
     for (let i = 0; i < receivedData.length; i++) {
       if (receivedData[i]._id === item._id) {
-        Swal.fire({
-          title: `Seguro?`,
-          text: `Esta seguro de borrar este item: ${item.name}, ${item.brand}`,
-          input: "text",
-          inputAttributes: {
-            autocapitalize: "off",
-            placeholder: `Cantidad existente: ${item.quantity}`,
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-danger'
           },
+          buttonsStyling: false
+        })
+        
+        swalWithBootstrapButtons.fire({
+          title: 'Esta seguro?',
+          text: "No se puede revertir esta accion despues de ejecutarse!",
+          icon: 'warning',
           showCancelButton: true,
-          confirmButtonText: "Guarda",
-          showLoaderOnConfirm: true,
-          allowOutsideClick: () => !Swal.isLoading(),
-        }).then((result) => {
+          confirmButtonText: 'Si, proceder!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true
+        }).then(async (result) => {
           if (result.isConfirmed) {
-            Swal.fire({
-              title: `${item.name}, ${item.brand}`,
-              text: "Item fue borrado del inventario",
-              preConfirm: async () => {
-                await apiBase.put(`/item/delete-item/${item._id}`);
-              },
-            });
+            const response = await apiBase.delete(`/item/delete-item/${receivedData[i]._id}`)
+            if(response){
+               swalWithBootstrapButtons.fire(
+              'Deleted!',
+              'Your file has been deleted.',
+              'success'
+            )
+            }
+           
+          } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+          ) {
+            swalWithBootstrapButtons.fire(
+              'Cancelled',
+              'La accion fue cancelada',
+              'error'
+            )
           }
-        });
+        })
       }
     }
   };
