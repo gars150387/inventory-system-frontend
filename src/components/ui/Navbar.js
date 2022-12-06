@@ -84,7 +84,7 @@ export const Navbar = () => {
             {adminUser.token && (
               <>
                 <li className="nav-item">
-                  <a onClick={handleSignOut} className="nav-link">
+                  <a href="" onClick={handleSignOut} className="nav-link">
                     <strong>{adminUser.name}</strong>
                   </a>
                 </li>
