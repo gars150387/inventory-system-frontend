@@ -56,14 +56,11 @@ export const Navbar = () => {
               <>
                 <NavLink to="./sale">
                   <li className="nav-item">
-                    <a href="./sale" className="nav-link">Venta</a>
+                    <a href="./sale" className="nav-link">
+                      Venta
+                    </a>
                   </li>
                 </NavLink>
-                {/* <NavLink to="./pricing">
-                  <li className="nav-item">
-                    <a href="./pricing" className="nav-link">Precios</a>
-                  </li>
-                </NavLink> */}
               </>
             )}
 
@@ -71,12 +68,23 @@ export const Navbar = () => {
               <>
                 <NavLink to="./register">
                   <li className="nav-item">
-                    <a href="./register" className="nav-link">Nuevo Usuario</a>
+                    <a href="./register" className="nav-link">
+                      Nuevo Usuario
+                    </a>
+                  </li>
+                </NavLink>
+                <NavLink to="./all-orders">
+                  <li className="nav-item">
+                    <a href="./all-orders" className="nav-link">
+                      Ventas Totales
+                    </a>
                   </li>
                 </NavLink>
                 <NavLink to="./feed_stock">
                   <li className="nav-item">
-                    <a href="./feed_stock" className="nav-link">Ingresar Inventario</a>
+                    <a href="./feed_stock" className="nav-link">
+                      Ingresar Inventario
+                    </a>
                   </li>
                 </NavLink>
               </>
