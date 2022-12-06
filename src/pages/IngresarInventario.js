@@ -5,10 +5,13 @@ import { useSelector } from "react-redux";
 import { apiBase } from "../components/api/Api";
 import { Pagination } from "../components/helper/Pagination";
 import Swal from "sweetalert2";
+import { EditItemModal } from "../components/ui/EditItemModal";
 
 export const IngresarInventario = () => {
   const [search, setSearch] = useState("");
   const [receivedData, setReceivedData] = useState([]);
+  const [modalState, setModalState] = useState(false);
+  const [itemInfoToModal, setItemInfoToModal] = useState("");
   const { adminUser } = useSelector((state) => state.admin);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsRenderedPerPage] = useState(10);
@@ -68,47 +71,55 @@ export const IngresarInventario = () => {
     }
   };
 
+  const handleEditItem = async (item) => {
+    setModalState(true);
+    setItemInfoToModal(item);
+  };
+
   const handleDeleteItem = async (item) => {
     for (let i = 0; i < receivedData.length; i++) {
       if (receivedData[i]._id === item._id) {
         const swalWithBootstrapButtons = Swal.mixin({
           customClass: {
-            confirmButton: 'btn btn-success',
-            cancelButton: 'btn btn-danger'
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger",
           },
-          buttonsStyling: false
-        })
-        
-        swalWithBootstrapButtons.fire({
-          title: 'Esta seguro?',
-          text: "No se puede revertir esta accion despues de ejecutarse!",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Si, proceder!',
-          cancelButtonText: 'No, cancel!',
-          reverseButtons: true
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            const response = await apiBase.delete(`/item/delete-item/${receivedData[i]._id}`)
-            if(response){
-               swalWithBootstrapButtons.fire(
-              'Deleted!',
-              'Your file has been deleted.',
-              'success'
-            )
+          buttonsStyling: false,
+        });
+
+        swalWithBootstrapButtons
+          .fire({
+            title: "Esta seguro?",
+            text: "No se puede revertir esta accion despues de ejecutarse!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Si, proceder!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true,
+          })
+          .then(async (result) => {
+            if (result.isConfirmed) {
+              const response = await apiBase.delete(
+                `/item/delete-item/${receivedData[i]._id}`
+              );
+              if (response) {
+                swalWithBootstrapButtons.fire(
+                  "Deleted!",
+                  "Your file has been deleted.",
+                  "success"
+                );
+              }
+            } else if (
+              /* Read more about handling dismissals below */
+              result.dismiss === Swal.DismissReason.cancel
+            ) {
+              swalWithBootstrapButtons.fire(
+                "Cancelled",
+                "La accion fue cancelada",
+                "error"
+              );
             }
-           
-          } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-          ) {
-            swalWithBootstrapButtons.fire(
-              'Cancelled',
-              'La accion fue cancelada',
-              'error'
-            )
-          }
-        })
+          });
       }
     }
   };
@@ -116,7 +127,7 @@ export const IngresarInventario = () => {
   return (
     <div>
       <div>
-        <h4>IngresarInventario</h4>
+        <h4>Ingresar Inventario</h4>
       </div>
       <div>
         <FormatToFeedStock />
@@ -145,6 +156,9 @@ export const IngresarInventario = () => {
           <table className="table table-striped">
             <thead>
               <tr>
+                {adminUser.role === "Administrador" && (
+                  <th scope="col">Accion</th>
+                )}
                 <th scope="col">Producto</th>
                 <th scope="col">Marca</th>
                 <th scope="col">Color</th>
@@ -170,6 +184,17 @@ export const IngresarInventario = () => {
                   return (
                     <>
                       <tr key={item._id}>
+                        {adminUser.role === "Administrador" && (
+                          <td>
+                            <p
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handleEditItem(item)}
+                            >
+                              Editar Item
+                            </p>
+                          </td>
+                        )}
+
                         <td>{item.name}</td>
                         <td>{item.brand}</td>
                         <td>{item.color}</td>
@@ -211,6 +236,11 @@ export const IngresarInventario = () => {
           />
         </div>
       </div>
+      <EditItemModal
+        itemInfoToModal={itemInfoToModal}
+        modalState={modalState}
+        setModalState={setModalState}
+      />
     </div>
   );
 };

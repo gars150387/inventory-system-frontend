@@ -4,6 +4,7 @@ import "../style/component/Login.css";
 import { useDispatch } from "react-redux";
 import { onAddNewAdminUser } from "../store/slices/adminSlice";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 const loginFormFields = {
   loginEmail: "",
@@ -18,17 +19,18 @@ export const Login = () => {
     loginPassword,
     onInputChange: onloginInputChange,
   } = useForm(loginFormFields);
+
   const onSubmitLogin = async (event) => {
     event.preventDefault();
     try {
       const response = await apiBase.post("/admin/login", {
-        email: loginEmail,
+        email: loginEmail.toLowerCase(),
         password: loginPassword,
       });
 
       if (response) {
         console.log("response", response);
-        navigate("/pricing");
+        navigate("/sale");
       }
       dispatch(
         onAddNewAdminUser({
@@ -44,6 +46,7 @@ export const Login = () => {
         "🚀 ~ file: Login.js ~ line 29 ~ onSubmitLogin ~ error",
         error
       );
+      Swal.fire("Error", "Usuario/Contrasena no coinciden", "error")
     }
   };
 

@@ -32,7 +32,7 @@ try {
     } else {
       const response = await apiBase.post("/admin/new_admin_user", {
         name: registerName,
-        email: registerEmail,
+        email: registerEmail.toLowerCase(),
         password: registerPassword,
         role: registerRole,
       });

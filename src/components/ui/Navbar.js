@@ -24,8 +24,8 @@ export const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg bg-light">
       <div className="container-fluid">
-        <NavLink to="/">
-          <a href="/" className="navbar-brand">
+        <NavLink to="./">
+          <a href="./" className="navbar-brand">
             Rosa Mistica
           </a>
           <button
@@ -40,21 +40,12 @@ export const Navbar = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
         </NavLink>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-          }}
-          className="collapse navbar-collapse"
-          id="navbarNav"
-        >
+        <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
             {adminUser.token === "" && (
-              <NavLink to="/">
+              <NavLink to="./">
                 <li className="nav-item">
-                  <a href="/" className="nav-link active" aria-current="page">
+                  <a href="./" className="nav-link active" aria-current="page">
                     Inicio
                   </a>
                 </li>
@@ -63,59 +54,43 @@ export const Navbar = () => {
 
             {adminUser.token && (
               <>
-                <NavLink to="/sale">
+                <NavLink to="./sale">
                   <li className="nav-item">
-                    <a href="/sale" className="nav-link">
-                      Venta
-                    </a>
+                    <a href="./sale" className="nav-link">Venta</a>
                   </li>
                 </NavLink>
-                {/* <NavLink to="/pricing">
+                {/* <NavLink to="./pricing">
                   <li className="nav-item">
-                    <a href="/" className="nav-link">Precios</a>
+                    <a href="./pricing" className="nav-link">Precios</a>
                   </li>
                 </NavLink> */}
               </>
             )}
 
-            {adminUser.role === "Administrador" ||
-            adminUser.role === "Encargado" ? (
+            {adminUser.role === "Administrador" && (
               <>
-                <NavLink to="/register">
+                <NavLink to="./register">
                   <li className="nav-item">
-                    <a href="/register" className="nav-link">
-                      Nuevo Usuario
-                    </a>
+                    <a href="./register" className="nav-link">Nuevo Usuario</a>
                   </li>
                 </NavLink>
-                <NavLink to="/feed_stock">
+                <NavLink to="./feed_stock">
                   <li className="nav-item">
-                    <a href="/feed_stock" className="nav-link">
-                      Ingresar Inventario
-                    </a>
+                    <a href="./feed_stock" className="nav-link">Ingresar Inventario</a>
                   </li>
                 </NavLink>
               </>
-            ) : null}
-            {adminUser.role === "Administrador" && (
-              <NavLink to="/all-orders">
-                <li className="nav-item">
-                  <a href="/all-orders" className="nav-link">
-                    Todas las Ventas
-                  </a>
-                </li>
-              </NavLink>
             )}
             {adminUser.token && (
               <>
                 <li className="nav-item">
-                  <a href="/" onClick={handleSignOut} className="nav-link">
+                  <a onClick={handleSignOut} className="nav-link">
                     <strong>{adminUser.name}</strong>
                   </a>
                 </li>
-                <NavLink to="/">
+                <NavLink to="./">
                   <li className="nav-item">
-                    <a href="/" onClick={handleSignOut} className="nav-link">
+                    <a href="./" onClick={handleSignOut} className="nav-link">
                       Cerrar sesion
                     </a>
                   </li>

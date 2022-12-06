@@ -59,23 +59,24 @@ export const FormatToFeedStock = () => {
       <form onClick={handleSubmitInfo} className="container-form">
         <div className="input-field">
           <label>Nombre</label>
-          <input name="nombre" value={nombre} onChange={onInputChange} />
+          <input placeholder="Nombre" name="nombre" value={nombre} onChange={onInputChange} />
         </div>
         <div className="input-field">
           <label>Tamano</label>
-          <input name="tamano" value={tamano} onChange={onInputChange} />
+          <input placeholder="Numero, ejemplo: 7 o 0" name="tamano" value={tamano} onChange={onInputChange} />
         </div>
         <div className="input-field">
           <label>color</label>
-          <input name="color" value={color} onChange={onInputChange} />
+          <input placeholder="Color o NA" name="color" value={color} onChange={onInputChange} />
         </div>
         <div className="input-field">
           <label>Marca</label>
-          <input name="marca" value={marca} onChange={onInputChange} />
+          <input placeholder="Marca o NA" name="marca" value={marca} onChange={onInputChange} />
         </div>
         <div className="input-field">
           <label>Descripcion</label>
           <input
+          placeholder="Descripcion del item"
             name="descripcion"
             value={descripcion}
             onChange={onInputChange}
@@ -83,15 +84,15 @@ export const FormatToFeedStock = () => {
         </div>
         <div className="input-field">
           <label>Costo</label>
-          <input name="costo" value={costo} onChange={onInputChange} />
+          <input placeholder="Costo, ejemplo: 3.55" name="costo" value={costo} onChange={onInputChange} />
         </div>
         <div className="input-field">
           <label>Cantidad</label>
-          <input name="cantidad" value={cantidad} onChange={onInputChange} />
+          <input placeholder="Cantidad, ejemplo: 55" name="cantidad" value={cantidad} onChange={onInputChange} />
         </div>
         <div className="input-field">
           <label>Precio</label>
-          <input name="precio" value={precio} onChange={onInputChange} />
+          <input placeholder="Precio, ejemplo: 6.45" name="precio" value={precio} onChange={onInputChange} />
         </div>
         <button type="submit">Agredar a inventario</button>
       </form>

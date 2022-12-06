@@ -16,6 +16,7 @@ let objItem = {
   quantity: "",
 };
 export const SelectItem = ({ search, salePerson }) => {
+  console.log("🚀 ~ file: SelectItem.js:19 ~ SelectItem ~ search", search)
   const [receivedData, setReceivedData] = useState([]);
   const [addItem, setAddItem] = useState([]);
   const { adminUser } = useSelector((state) => state.admin);
@@ -54,6 +55,10 @@ export const SelectItem = ({ search, salePerson }) => {
       initialStock.current = receivedData;
     }
   }, 5_00);
+
+  const resultFound = receivedData.filter((item) =>
+    item.resume.toLowerCase().includes(search.toLowerCase())
+  );
 
   const addItemTocart = async (item) => {
     Swal.fire({
@@ -190,29 +195,53 @@ export const SelectItem = ({ search, salePerson }) => {
           </tr>
         </thead>
         <tbody>
-          {currentItemsRendered
-            ?.filter((item) => item.resume.includes(search))
-            .map((item) => {
-              return (
-                <>
-                  <tr key={item._id}>
-                    <td>{item.name}</td>
-                    <td>{item.brand}</td>
-                    <td>{item.color}</td>
-                    <td>{item.size}</td>
-                    <td>{item.resume}</td>
-                    <td>{item.quantity}</td>
-                    {adminUser.role === "Administrador" && <td>{item.cost}</td>}
-                    <td>{item.price}</td>
-                    <td>
-                      <button onClick={() => addItemTocart(item)}>
-                        Agregar
-                      </button>
-                    </td>
-                  </tr>
-                </>
-              );
-            })}
+          {search === ""
+            ? currentItemsRendered?.map((item) => {
+                return (
+                  <>
+                    <tr key={item._id}>
+                      <td>{item.name}</td>
+                      <td>{item.brand}</td>
+                      <td>{item.color}</td>
+                      <td>{item.size}</td>
+                      <td>{item.resume}</td>
+                      <td>{item.quantity}</td>
+                      {adminUser.role === "Administrador" && (
+                        <td>{item.cost}</td>
+                      )}
+                      <td>{item.price}</td>
+                      <td>
+                        <button onClick={() => addItemTocart(item)}>
+                          Agregar
+                        </button>
+                      </td>
+                    </tr>
+                  </>
+                );
+              })
+            : resultFound?.map((item) => {
+                return (
+                  <>
+                    <tr key={item._id}>
+                      <td>{item.name}</td>
+                      <td>{item.brand}</td>
+                      <td>{item.color}</td>
+                      <td>{item.size}</td>
+                      <td>{item.resume}</td>
+                      <td>{item.quantity}</td>
+                      {adminUser.role === "Administrador" && (
+                        <td>{item.cost}</td>
+                      )}
+                      <td>{item.price}</td>
+                      <td>
+                        <button onClick={() => addItemTocart(item)}>
+                          Agregar
+                        </button>
+                      </td>
+                    </tr>
+                  </>
+                );
+              })}
         </tbody>
         <Pagination
           childrenRenderedPerPage={itemsRenderedPerPage}
