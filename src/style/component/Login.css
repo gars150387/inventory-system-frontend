@@ -1,11 +1,12 @@
 .login-container{
     margin-top: 5%;
-    margin: 5% auto;
+    margin: 5% 0%;
+    width: 50%;
 }
 .login-form-1{
     border-radius: 5px;
     box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
-    padding: 5%;
+    padding: 2%;
 }
 .login-form-1 h3{
     text-align: center;
@@ -16,6 +17,7 @@
     box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
     padding: 5%;
     background: #0062cc;
+    width: 60%;
 }
 .login-form-2 h3{
     text-align: center;
