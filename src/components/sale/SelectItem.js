@@ -16,7 +16,7 @@ let objItem = {
   quantity: "",
 };
 export const SelectItem = ({ search, salePerson }) => {
-  console.log("🚀 ~ file: SelectItem.js:19 ~ SelectItem ~ search", search)
+  console.log("🚀 ~ file: SelectItem.js:19 ~ SelectItem ~ search", search);
   const [receivedData, setReceivedData] = useState([]);
   const [addItem, setAddItem] = useState([]);
   const { adminUser } = useSelector((state) => state.admin);
@@ -178,77 +178,82 @@ export const SelectItem = ({ search, salePerson }) => {
   };
   return (
     <>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Producto</th>
-            <th scope="col">Marca</th>
-            <th scope="col">Color</th>
-            <th scope="col">Tamano</th>
-            <th scope="col">Descripcion</th>
-            <th scope="col">Disponible (Unidades)</th>
-            {adminUser.role === "Administrador" && (
-              <th scope="col">Costo ($)</th>
-            )}
-            <th scope="col">Precio ($)</th>
-            <th scope="col">Vender</th>
-          </tr>
-        </thead>
-        <tbody>
-          {search === ""
-            ? currentItemsRendered?.map((item) => {
-                return (
-                  <>
-                    <tr key={item._id}>
-                      <td>{item.name}</td>
-                      <td>{item.brand}</td>
-                      <td>{item.color}</td>
-                      <td>{item.size}</td>
-                      <td>{item.resume}</td>
-                      <td>{item.quantity}</td>
-                      {adminUser.role === "Administrador" && (
-                        <td>{item.cost}</td>
-                      )}
-                      <td>{item.price}</td>
-                      <td>
-                        <button onClick={() => addItemTocart(item)}>
-                          Agregar
-                        </button>
-                      </td>
-                    </tr>
-                  </>
-                );
-              })
-            : resultFound?.map((item) => {
-                return (
-                  <>
-                    <tr key={item._id}>
-                      <td>{item.name}</td>
-                      <td>{item.brand}</td>
-                      <td>{item.color}</td>
-                      <td>{item.size}</td>
-                      <td>{item.resume}</td>
-                      <td>{item.quantity}</td>
-                      {adminUser.role === "Administrador" && (
-                        <td>{item.cost}</td>
-                      )}
-                      <td>{item.price}</td>
-                      <td>
-                        <button onClick={() => addItemTocart(item)}>
-                          Agregar
-                        </button>
-                      </td>
-                    </tr>
-                  </>
-                );
-              })}
-        </tbody>
-        <Pagination
-          childrenRenderedPerPage={itemsRenderedPerPage}
-          totalChildren={receivedData.length}
-          paginate={paginate}
-        />
-      </table>
+      <div className="table-responsive">
+        <table className="table table-sm">
+          <caption>
+            <Pagination
+              childrenRenderedPerPage={itemsRenderedPerPage}
+              totalChildren={receivedData.length}
+              paginate={paginate}
+            />
+          </caption>
+          <thead className="table-dark">
+            <tr>
+              <th scope="col">Producto</th>
+              <th scope="col">Marca</th>
+              <th scope="col">Color</th>
+              <th scope="col">Tamano</th>
+              <th scope="col">Descripcion</th>
+              <th scope="col">Disponible (Unidades)</th>
+              {adminUser.role === "Administrador" && (
+                <th scope="col">Costo ($)</th>
+              )}
+              <th scope="col">Precio ($)</th>
+              <th scope="col">Vender</th>
+            </tr>
+          </thead>
+          <tbody>
+            {search === ""
+              ? currentItemsRendered?.map((item) => {
+                  return (
+                    <>
+                      <tr key={item._id}>
+                        <td>{item.name}</td>
+                        <td>{item.brand}</td>
+                        <td>{item.color}</td>
+                        <td>{item.size}</td>
+                        <td>{item.resume}</td>
+                        <td>{item.quantity}</td>
+                        {adminUser.role === "Administrador" && (
+                          <td>{item.cost}</td>
+                        )}
+                        <td>{item.price}</td>
+                        <td>
+                          <button onClick={() => addItemTocart(item)}>
+                            Agregar
+                          </button>
+                        </td>
+                      </tr>
+                    </>
+                  );
+                })
+              : resultFound?.map((item) => {
+                  return (
+                    <>
+                      <tr key={item._id}>
+                        <td>{item.name}</td>
+                        <td>{item.brand}</td>
+                        <td>{item.color}</td>
+                        <td>{item.size}</td>
+                        <td>{item.resume}</td>
+                        <td>{item.quantity}</td>
+                        {adminUser.role === "Administrador" && (
+                          <td>{item.cost}</td>
+                        )}
+                        <td>{item.price}</td>
+                        <td>
+                          <button onClick={() => addItemTocart(item)}>
+                            Agregar
+                          </button>
+                        </td>
+                      </tr>
+                    </>
+                  );
+                })}
+          </tbody>
+        </table>
+      </div>
+
       <div>
         <h5>Orden en progreso</h5>
       </div>

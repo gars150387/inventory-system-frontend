@@ -80,15 +80,16 @@ export const Navbar = () => {
                     </a>
                   </li>
                 </NavLink>
-                <NavLink to="./feed_stock">
+               
+              </>
+            )}
+            {adminUser.role === "Administrador" || adminUser.role === "Encargado" ?  (<NavLink to="./feed_stock">
                   <li className="nav-item">
                     <a href="./feed_stock" className="nav-link">
                       Ingresar Inventario
                     </a>
                   </li>
-                </NavLink>
-              </>
-            )}
+                </NavLink>) : null}
             {adminUser.token && (
               <>
                 <li className="nav-item">

@@ -52,8 +52,7 @@ export const Login = () => {
 
   return (
     <div className="container login-container">
-      <div className="row">
-        <div className="col-md-6 login-form-1">
+        <div className="login-form-1">
           <h3>Sign In</h3>
           <form onSubmit={onSubmitLogin}>
             <div className="form-group mb-2">
@@ -81,7 +80,6 @@ export const Login = () => {
             </div>
           </form>
         </div>
-      </div>
     </div>
   );
 };

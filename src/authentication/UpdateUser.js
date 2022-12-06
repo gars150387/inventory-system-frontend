@@ -32,7 +32,7 @@ export const UpdateUser = () => {
     <div className="updateAdminRole-container">
         <h3> Actualiza Admin Usuario Permiso</h3>
         <form className="updateAdminRole-form">
-          <form onSubmit={onUpdateUserRole}>
+          <form>
             <div className="form-group mb-2">
               <input
                 type="email"
@@ -61,11 +61,7 @@ export const UpdateUser = () => {
             </div>
 
             <div className="d-grid gap-2">
-              <input
-                type="submit"
-                className="btnSubmit"
-                value="Actualiza Usuario"
-              />
+              <button onClick={onUpdateUserRole}>Actualizar</button>
             </div>
           </form>{" "}
         </form>

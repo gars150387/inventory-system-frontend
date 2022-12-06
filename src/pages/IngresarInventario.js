@@ -147,14 +147,16 @@ export const IngresarInventario = () => {
             />
           </div>
         </div>
-        <div
-          style={{
-            width: "75%",
-            margin: "0 auto",
-          }}
-        >
-          <table className="table table-striped">
-            <thead>
+        <div style={{width: "95%", margin:"0 auto"}} className="table-responsive">
+          <table className="table table-sm">
+            <caption>
+              <Pagination
+                childrenRenderedPerPage={itemsRenderedPerPage}
+                totalChildren={receivedData.length}
+                paginate={paginate}
+              />
+            </caption>
+            <thead className="table-dark">
               <tr>
                 {adminUser.role === "Administrador" && (
                   <th scope="col">Accion</th>
@@ -229,11 +231,6 @@ export const IngresarInventario = () => {
                 })}
             </tbody>
           </table>
-          <Pagination
-            childrenRenderedPerPage={itemsRenderedPerPage}
-            totalChildren={receivedData.length}
-            paginate={paginate}
-          />
         </div>
       </div>
       <EditItemModal

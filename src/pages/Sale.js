@@ -73,7 +73,7 @@ export const Sale = () => {
           onChange={(event) => setSearch(event.target.value)}
         />
       </div>
-      <div>
+      <div className="container-selection-item">
         <SelectItem salePerson={salePerson} search={search} />
       </div>
     </div>
