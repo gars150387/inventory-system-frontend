@@ -12,8 +12,8 @@ export const UpdateUser = () => {
   const onUpdateUserRole = async () => {
     try {
         const response = await apiBase.put("/admin/update-role", {
-            userEmail,
-            role
+            email: userEmail,
+            role: role
         })
         console.log("🚀 ~ file: UpdateUser.js:19 ~ onUpdateUserRole ~ response", response)
         if (response){
