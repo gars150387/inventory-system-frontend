@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useOrder } from "../../hooks/useOrder";
 import { apiBase } from "../api/Api";
-import { Pagination } from "../helper/Pagination";
+import ReactPaginate from "react-paginate";
 import { ReceiptFormat } from "./ReceiptFormat";
 
 let objItem = {
@@ -21,22 +21,12 @@ export const SelectItem = ({ search, salePerson }) => {
   const [addItem, setAddItem] = useState([]);
   const { adminUser } = useSelector((state) => state.admin);
   const { newOrderCall, currentOrderProcessed, showReceipt } = useOrder();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsRenderedPerPage] = useState(10);
-
-  const indexOfLastItemsRendered = currentPage * itemsRenderedPerPage;
-  const indexOfFirstItemsRendered =
-    indexOfLastItemsRendered - itemsRenderedPerPage;
-  const currentItemsRendered = receivedData.slice(
-    indexOfFirstItemsRendered,
-    indexOfLastItemsRendered
-  );
+  const [currentItemsRendered, setCurrentItemsRendered] = useState(null);
+  const [pageCount, setPageCount] = useState(0);
+  const [itemOffset, setItemOffset] = useState(0);
+  const itemsPerPage = 10;
 
   const { _id, clientName, order, time, total } = currentOrderProcessed;
-
-  const paginate = (pageNumbers) => {
-    setCurrentPage(pageNumbers);
-  };
 
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
@@ -46,11 +36,18 @@ export const SelectItem = ({ search, salePerson }) => {
   };
   useEffect(() => {
     callApiInventoryResume();
-  }, []);
+  }, [itemOffset, itemsPerPage, receivedData]);
+
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % receivedData.length;
+    setItemOffset(newOffset);
+  };
 
   const initialStock = useRef();
   useInterval(() => {
-    callApiInventoryResume();
+    const endOffset = itemOffset + itemsPerPage;
+    setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(receivedData.length / itemsPerPage));
     if (addItem.length !== initialStock.length) {
       initialStock.current = receivedData;
     }
@@ -181,10 +178,19 @@ export const SelectItem = ({ search, salePerson }) => {
       <div className="table-responsive">
         <table className="table table-sm">
           <caption>
-            <Pagination
-              childrenRenderedPerPage={itemsRenderedPerPage}
-              totalChildren={receivedData.length}
-              paginate={paginate}
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel="next >"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={2}
+              pageCount={pageCount}
+              previousLabel="< previous"
+              renderOnZeroPageCount={null}
+              containerClassName="pagination"
+              pageLinkClassName="page-num"
+              previousLinkClassName="page-num"
+              nextLinkClassName="page-num"
+              activeLinkClassName="active"
             />
           </caption>
           <thead className="table-dark">

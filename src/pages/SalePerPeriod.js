@@ -1,30 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { apiBase } from "../components/api/Api";
-import { Pagination } from "../components/helper/Pagination";
+import ReactPaginate from "react-paginate";
 import { CustomerFormat } from "../components/sale/CustomerFormat";
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
+import { useInterval } from "interval-hooks";
 
 export const SalePerPeriod = () => {
   const [date, setDate] = useState(new Date());
-  console.log("🚀 ~ file: SalePerPeriod.js:11 ~ SalePerPeriod ~ date", )
+  console.log("🚀 ~ file: SalePerPeriod.js:11 ~ SalePerPeriod ~ date");
   const [allOrdersPlaced, setAllOrdersPlaced] = useState([]);
   const [orderId, setOrderId] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [salesRenderedPerPage] = useState(10);
-
-  const indexOfLastSalesRendered = currentPage * salesRenderedPerPage;
-  const indexOfFirstSalesRendered =
-    indexOfLastSalesRendered - salesRenderedPerPage;
-  const currentSalesRendered = allOrdersPlaced.slice(
-    indexOfFirstSalesRendered,
-    indexOfLastSalesRendered
-  );
-
-  const paginate = (pageNumbers) => {
-    setCurrentPage(pageNumbers);
-  };
+  ///
+  const [currentItemsRendered, setCurrentItemsRendered] = useState(null);
+  const [pageCount, setPageCount] = useState(0);
+  const [itemOffset, setItemOffset] = useState(0);
+  const itemsPerPage = 10;
 
   const callApiToRenderAllOrdersPlaced = async () => {
     const response = await apiBase.get("/item/all-orders");
@@ -32,10 +24,21 @@ export const SalePerPeriod = () => {
       setAllOrdersPlaced(response.data.findAllOrders);
     }
   };
-
   useEffect(() => {
     callApiToRenderAllOrdersPlaced();
-  }, []);
+  }, [itemOffset, itemsPerPage, allOrdersPlaced])
+  
+
+  useInterval(() => {
+    const endOffset = itemOffset + itemsPerPage;
+    setCurrentItemsRendered(allOrdersPlaced.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(allOrdersPlaced.length / itemsPerPage));
+  }, 2_00);
+
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % allOrdersPlaced.length;
+    setItemOffset(newOffset);
+  };
 
   return (
     <div
@@ -48,6 +51,22 @@ export const SalePerPeriod = () => {
     >
       <div style={{ width: "60%", margin: "0 0% 0% 3%" }}>
         <table className="table">
+          <caption>
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel="next >"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              pageCount={pageCount}
+              previousLabel="< previous"
+              renderOnZeroPageCount={null}
+              containerClassName="pagination"
+              pageLinkClassName="page-num"
+              previousLinkClassName="page-num"
+              nextLinkClassName="page-num"
+              activeLinkClassName="active"
+            />
+          </caption>
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -64,8 +83,8 @@ export const SalePerPeriod = () => {
             </tr>
           </thead>
           <tbody>
-            {currentSalesRendered?.map((order, index) => {
-            //  console.log(order[index].time < order[index++].time)
+            {currentItemsRendered?.map((order, index) => {
+              //  console.log(order[index].time < order[index++].time)
               return (
                 <tr>
                   <th scope="row">{index + 1}</th>
@@ -83,11 +102,6 @@ export const SalePerPeriod = () => {
             })}
           </tbody>
         </table>
-        <Pagination
-          childrenRenderedPerPage={salesRenderedPerPage}
-          totalChildren={allOrdersPlaced.length}
-          paginate={paginate}
-        />
       </div>
       <div style={{ margin: "0% auto", borderLeft: "1px dashed #212529" }}>
         <CustomerFormat order={orderId} />

@@ -67,7 +67,7 @@ export const ReceiptFormat = ({
       </div>
       <hr style={{width:"90%", margin:"2% auto"}}/>
       <div className="container-receipt-submitted" style={{ width: "98%" }}>
-        <table class="table">
+        <table className="table">
           <thead>
             <tr>
               <th scope="col">#</th>

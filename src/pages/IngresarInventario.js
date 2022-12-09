@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormatToFeedStock } from "../components/feedStock/FormatToFeedStock";
 import { useInterval } from "interval-hooks";
 import { useSelector } from "react-redux";
 import { apiBase } from "../components/api/Api";
-import { Pagination } from "../components/helper/Pagination";
+import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
 import { EditItemModal } from "../components/ui/EditItemModal";
+import "../style/component/paginate.css";
 
 export const IngresarInventario = () => {
   const [search, setSearch] = useState("");
@@ -13,20 +14,10 @@ export const IngresarInventario = () => {
   const [modalState, setModalState] = useState(false);
   const [itemInfoToModal, setItemInfoToModal] = useState("");
   const { adminUser } = useSelector((state) => state.admin);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsRenderedPerPage] = useState(10);
-
-  const indexOfLastItemsRendered = currentPage * itemsRenderedPerPage;
-  const indexOfFirstItemsRendered =
-    indexOfLastItemsRendered - itemsRenderedPerPage;
-  const currentItemsRendered = receivedData.slice(
-    indexOfFirstItemsRendered,
-    indexOfLastItemsRendered
-  );
-
-  const paginate = (pageNumbers) => {
-    setCurrentPage(pageNumbers);
-  };
+  const [currentItemsRendered, setCurrentItemsRendered] = useState(null);
+  const [pageCount, setPageCount] = useState(0);
+  const [itemOffset, setItemOffset] = useState(0);
+  const itemsPerPage = 10;
 
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
@@ -35,9 +26,20 @@ export const IngresarInventario = () => {
     }
   };
 
-  useInterval(() => {
+  useEffect(() => {
     callApiInventoryResume();
+  }, [itemOffset, itemsPerPage, receivedData]);
+
+  useInterval(() => {
+    const endOffset = itemOffset + itemsPerPage;
+    setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(receivedData.length / itemsPerPage));
   }, 2_00);
+
+  const handlePageClick = (event) => {
+    const newOffset = (event.selected * itemsPerPage) % receivedData.length;
+    setItemOffset(newOffset);
+  };
 
   const handleEditQuantity = async (item) => {
     for (let i = 0; i < receivedData.length; i++) {
@@ -147,13 +149,25 @@ export const IngresarInventario = () => {
             />
           </div>
         </div>
-        <div style={{width: "95%", margin:"0 auto"}} className="table-responsive">
+        <div
+          style={{ width: "95%", margin: "0 auto" }}
+          className="table-responsive"
+        >
           <table className="table table-sm">
             <caption>
-              <Pagination
-                childrenRenderedPerPage={itemsRenderedPerPage}
-                totalChildren={receivedData.length}
-                paginate={paginate}
+              <ReactPaginate
+                breakLabel="..."
+                nextLabel="next >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={5}
+                pageCount={pageCount}
+                previousLabel="< previous"
+                renderOnZeroPageCount={null}
+                containerClassName="pagination"
+                pageLinkClassName="page-num"
+                previousLinkClassName="page-num"
+                nextLinkClassName="page-num"
+                activeLinkClassName="active"
               />
             </caption>
             <thead className="table-dark">
