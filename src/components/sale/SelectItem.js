@@ -6,6 +6,7 @@ import { useOrder } from "../../hooks/useOrder";
 import { apiBase } from "../api/Api";
 import ReactPaginate from "react-paginate";
 import { ReceiptFormat } from "./ReceiptFormat";
+import "../../style/component/paginate.css"
 
 let objItem = {
   name: "",

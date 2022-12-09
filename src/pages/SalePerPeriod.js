@@ -3,6 +3,7 @@ import { apiBase } from "../components/api/Api";
 import ReactPaginate from "react-paginate";
 import { CustomerFormat } from "../components/sale/CustomerFormat";
 import DatePicker from "react-datepicker";
+import "../style/component/paginate.css"
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useInterval } from "interval-hooks";
