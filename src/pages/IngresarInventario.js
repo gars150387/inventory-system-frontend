@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FormatToFeedStock } from "../components/feedStock/FormatToFeedStock";
 import { useInterval } from "interval-hooks";
 import { useSelector } from "react-redux";
@@ -7,8 +7,9 @@ import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
 import { EditItemModal } from "../components/ui/EditItemModal";
 import "../style/component/paginate.css";
+import { current } from "@reduxjs/toolkit";
 
-export const IngresarInventario = () => {
+const IngresarInventario = () => {
   const [search, setSearch] = useState("");
   const [receivedData, setReceivedData] = useState([]);
   const [modalState, setModalState] = useState(false);
@@ -18,6 +19,7 @@ export const IngresarInventario = () => {
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   const itemsPerPage = 10;
+  const stockReference = useRef()
 
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
@@ -32,10 +34,18 @@ export const IngresarInventario = () => {
 
   useInterval(() => {
     const endOffset = itemOffset + itemsPerPage;
-    setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
+    setCurrentItemsRendered(stockReference.current.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(receivedData.length / itemsPerPage));
   }, 2_00);
 
+  if(receivedData !== []){
+    stockReference.current = receivedData
+  }
+  if(receivedData.length !== stockReference.current.length){
+    console.log("receivedData.length", receivedData.length)
+    console.log("stockReference.current.length", stockReference.current.length)
+    stockReference.current = receivedData
+  }
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % receivedData.length;
     setItemOffset(newOffset);
@@ -149,103 +159,109 @@ export const IngresarInventario = () => {
             />
           </div>
         </div>
-        <div
-          style={{ width: "95%", margin: "0 auto" }}
-          className="table-responsive"
-        >
-          <table className="table table-sm">
-            <caption>
-              <ReactPaginate
-                breakLabel="..."
-                nextLabel="next >"
-                onPageChange={handlePageClick}
-                pageRangeDisplayed={5}
-                pageCount={pageCount}
-                previousLabel="< previous"
-                renderOnZeroPageCount={null}
-                containerClassName="pagination"
-                pageLinkClassName="page-num"
-                previousLinkClassName="page-num"
-                nextLinkClassName="page-num"
-                activeLinkClassName="active"
-              />
-            </caption>
-            <thead className="table-dark">
-              <tr>
-                {adminUser.role === "Administrador" && (
-                  <th scope="col">Accion</th>
-                )}
-                <th scope="col">Producto</th>
-                <th scope="col">Marca</th>
-                <th scope="col">Color</th>
-                <th scope="col">Tamano</th>
-                <th scope="col">Descripcion</th>
-                <th scope="col">Disponible (Unidades)</th>
-                {adminUser.role === "Administrador" && (
-                  <th scope="col">Costo ($)</th>
-                )}
-                <th scope="col">Precio ($)</th>
-                <th scope="col">Editar Cantidad</th>
-                {adminUser.role === "Administrador" && (
-                  <th scope="col">Eliminar Articulo</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {currentItemsRendered
-                ?.filter((item) =>
-                  item.resume.toLowerCase().includes(search.toLowerCase())
-                )
-                .map((item) => {
-                  return (
-                    <>
-                      <tr key={item._id}>
-                        {adminUser.role === "Administrador" && (
-                          <td>
-                            <p
-                              style={{ cursor: "pointer" }}
-                              onClick={() => handleEditItem(item)}
-                            >
-                              Editar Item
-                            </p>
-                          </td>
-                        )}
+        {currentItemsRendered === null ? (
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        ) : (
+          <div
+            style={{ width: "95%", margin: "0 auto" }}
+            className="table-responsive"
+          >
+            <table className="table table-sm">
+              <caption>
+                <ReactPaginate
+                  breakLabel="..."
+                  nextLabel="next >"
+                  onPageChange={handlePageClick}
+                  pageRangeDisplayed={5}
+                  pageCount={pageCount}
+                  previousLabel="< previous"
+                  renderOnZeroPageCount={null}
+                  containerClassName="pagination"
+                  pageLinkClassName="page-num"
+                  previousLinkClassName="page-num"
+                  nextLinkClassName="page-num"
+                  activeLinkClassName="active"
+                />
+              </caption>
+              <thead className="table-dark">
+                <tr>
+                  {adminUser.role === "Administrador" && (
+                    <th scope="col">Accion</th>
+                  )}
+                  <th scope="col">Producto</th>
+                  <th scope="col">Marca</th>
+                  <th scope="col">Color</th>
+                  <th scope="col">Tamano</th>
+                  <th scope="col">Descripcion</th>
+                  <th scope="col">Disponible (Unidades)</th>
+                  {adminUser.role === "Administrador" && (
+                    <th scope="col">Costo ($)</th>
+                  )}
+                  <th scope="col">Precio ($)</th>
+                  <th scope="col">Editar Cantidad</th>
+                  {adminUser.role === "Administrador" && (
+                    <th scope="col">Eliminar Articulo</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {currentItemsRendered
+                  ?.filter((item) =>
+                    item.resume.toLowerCase().includes(search.toLowerCase())
+                  )
+                  .map((item) => {
+                    return (
+                      <>
+                        <tr key={item._id}>
+                          {adminUser.role === "Administrador" && (
+                            <td>
+                              <p
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleEditItem(item)}
+                              >
+                                Editar Item
+                              </p>
+                            </td>
+                          )}
 
-                        <td>{item.name}</td>
-                        <td>{item.brand}</td>
-                        <td>{item.color}</td>
-                        <td>{item.size}</td>
-                        <td>{item.resume}</td>
-                        <td>{item.quantity}</td>
-                        {adminUser.role === "Administrador" && (
-                          <td>{item.cost}</td>
-                        )}
-                        <td>{item.price}</td>
-                        <td>
-                          <p
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handleEditQuantity(item)}
-                          >
-                            Editar
-                          </p>
-                        </td>
-                        {adminUser.role === "Administrador" && (
+                          <td>{item.name}</td>
+                          <td>{item.brand}</td>
+                          <td>{item.color}</td>
+                          <td>{item.size}</td>
+                          <td>{item.resume}</td>
+                          <td>{item.quantity}</td>
+                          {adminUser.role === "Administrador" && (
+                            <td>{item.cost}</td>
+                          )}
+                          <td>{item.price}</td>
                           <td>
                             <p
                               style={{ cursor: "pointer" }}
-                              onClick={() => handleDeleteItem(item)}
+                              onClick={() => handleEditQuantity(item)}
                             >
-                              Eliminar
+                              Editar
                             </p>
                           </td>
-                        )}
-                      </tr>
-                    </>
-                  );
-                })}
-            </tbody>
-          </table>
-        </div>
+                          {adminUser.role === "Administrador" && (
+                            <td>
+                              <p
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleDeleteItem(item)}
+                              >
+                                Eliminar
+                              </p>
+                            </td>
+                          )}
+                        </tr>
+                      </>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
       <EditItemModal
         itemInfoToModal={itemInfoToModal}
@@ -255,3 +271,5 @@ export const IngresarInventario = () => {
     </div>
   );
 };
+
+export default IngresarInventario;
