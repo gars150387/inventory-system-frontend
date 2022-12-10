@@ -7,7 +7,6 @@ import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
 import { EditItemModal } from "../components/ui/EditItemModal";
 import "../style/component/paginate.css";
-import { current } from "@reduxjs/toolkit";
 
 const IngresarInventario = () => {
   const [search, setSearch] = useState("");
