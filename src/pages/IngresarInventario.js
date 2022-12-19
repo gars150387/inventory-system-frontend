@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormatToFeedStock } from "../components/feedStock/FormatToFeedStock";
-import { useInterval } from "interval-hooks";
 import { useSelector } from "react-redux";
 import { apiBase } from "../components/api/Api";
 import ReactPaginate from "react-paginate";
