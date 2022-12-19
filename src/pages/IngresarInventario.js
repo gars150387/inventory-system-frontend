@@ -18,7 +18,6 @@ const IngresarInventario = () => {
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   const itemsPerPage = 10;
-  const stockReference = useRef()
 
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
@@ -29,22 +28,11 @@ const IngresarInventario = () => {
 
   useEffect(() => {
     callApiInventoryResume();
+    const endOffset = itemOffset + itemsPerPage;
+    setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(receivedData.length / itemsPerPage));
   }, [itemOffset, itemsPerPage, receivedData]);
 
-  useInterval(() => {
-    const endOffset = itemOffset + itemsPerPage;
-    setCurrentItemsRendered(stockReference.current.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(receivedData.length / itemsPerPage));
-  }, 2_00);
-
-  if(receivedData !== []){
-    stockReference.current = receivedData
-  }
-  if(receivedData.length !== stockReference.current.length){
-    console.log("receivedData.length", receivedData.length)
-    console.log("stockReference.current.length", stockReference.current.length)
-    stockReference.current = receivedData
-  }
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % receivedData.length;
     setItemOffset(newOffset);
@@ -206,7 +194,7 @@ const IngresarInventario = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentItemsRendered
+                {receivedData
                   ?.filter((item) =>
                     item.resume.toLowerCase().includes(search.toLowerCase())
                   )
