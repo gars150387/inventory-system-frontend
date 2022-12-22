@@ -1,4 +1,3 @@
-import { useInterval } from "interval-hooks";
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
@@ -25,8 +24,9 @@ export const SelectItem = ({ search, salePerson }) => {
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   const itemsPerPage = 10;
-  const stockReference = useRef()
   const { _id, clientName, order, time, total } = currentOrderProcessed;
+
+  const initialStock = useRef();
 
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
@@ -36,31 +36,18 @@ export const SelectItem = ({ search, salePerson }) => {
   };
   useEffect(() => {
     callApiInventoryResume();
+    const endOffset = itemOffset + itemsPerPage;
+    setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(receivedData.length / itemsPerPage));
+    if (addItem.length !== initialStock.length) {
+      initialStock.current = receivedData;
+    }
   }, [itemOffset, itemsPerPage, receivedData]);
-
-  if(receivedData !== []){
-    stockReference.current = receivedData
-  }
-  if(receivedData.length !== stockReference.current.length){
-    console.log("receivedData.length", receivedData.length)
-    console.log("stockReference.current.length", stockReference.current.length)
-    stockReference.current = receivedData
-  }
 
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % receivedData.length;
     setItemOffset(newOffset);
   };
-
-  const initialStock = useRef();
-  useInterval(() => {
-    const endOffset = itemOffset + itemsPerPage;
-    setCurrentItemsRendered(stockReference.current.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(receivedData.length / itemsPerPage));
-    if (addItem.length !== initialStock.length) {
-      initialStock.current = receivedData;
-    }
-  }, 5_00);
 
   const resultFound = receivedData.filter((item) =>
     item.resume.toLowerCase().includes(search.toLowerCase())
@@ -142,9 +129,23 @@ export const SelectItem = ({ search, salePerson }) => {
     let referenceData = initialStock.current;
     for (let j = 0; j < addItem.length; j++) {
       for (let i = 0; i < referenceData.length; i++) {
-        if (addItem[i]._id === referenceData[i]._id) {
-          let total = referenceData[i].quantity - addItem[i].quantity;
-          apiBase.put(`/item/edit-item-quantity/${addItem[j]._id}`, {
+        console.log(
+          "🚀 ~ file: SelectItem.js:137 ~ modifyItemQuantityAfterOrder ~ addItem",
+          addItem[j]
+        );
+        console.log(
+          "🚀 ~ file: SelectItem.js:138 ~ modifyItemQuantityAfterOrder ~ referenceData",
+          referenceData[i]
+        );
+
+        if (addItem[j]._id === referenceData[i]._id) {
+          let total = referenceData[i].quantity - addItem[j].quantity;
+          console.log(
+            "🚀 ~ file: SelectItem.js:139 ~ modifyItemQuantityAfterOrder ~ total",
+            total
+          );
+
+          apiBase.put(`/item/edit-item-quantity/${referenceData[i]._id}`, {
             ...receivedData[i],
             quantity: total,
           });
@@ -165,14 +166,14 @@ export const SelectItem = ({ search, salePerson }) => {
         showLoaderOnConfirm: true,
         preConfirm: async (cliente) => {
           try {
+            modifyItemQuantityAfterOrder();
+            setAddItem([]);
             await newOrderCall({
               cliente,
               addItem,
               totalToDisplay,
               salePerson,
             });
-            await modifyItemQuantityAfterOrder();
-            setAddItem([]);
           } catch (error) {
             Swal.showValidationMessage(`Request failed: ${error}`);
           }
