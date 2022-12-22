@@ -9,18 +9,13 @@ export const Sale = () => {
   const { adminUser } = useSelector((state) => state.admin);
   const [listOfAdminUser, setListOfAdminUser] = useState([]);
   const [salePerson, setSalePerson] = useState("");
-  console.log("🚀 ~ file: Sale.js:12 ~ Sale ~ salePerson", salePerson)
-  console.log(
-    "🚀 ~ file: Sale.js:11 ~ Sale ~ listOfAdminUser",
-    listOfAdminUser
-  );
 
   const callApiForAdminUser = async () => {
     const response = await apiBase.get("/admin/admin-user");
     if (response) {
       setListOfAdminUser(response.data.adminUsers);
     }
-  };
+  };  
   useEffect(() => {
     callApiForAdminUser();
   }, []);
