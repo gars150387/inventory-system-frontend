@@ -1,10 +1,6 @@
 import React from "react";
 
 export const CustomerFormat = (order) => {
-  console.log(
-    "🚀 ~ file: CustomerFormat.js:4 ~ CustomerFormat ~ orderId",
-    Object.values(order)
-  );
   const details = Object.values(order);
   return (
     <div

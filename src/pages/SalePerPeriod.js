@@ -10,7 +10,6 @@ import { useInterval } from "interval-hooks";
 
 export const SalePerPeriod = () => {
   const [date, setDate] = useState(new Date());
-  console.log("🚀 ~ file: SalePerPeriod.js:11 ~ SalePerPeriod ~ date");
   const [allOrdersPlaced, setAllOrdersPlaced] = useState([]);
   const [orderId, setOrderId] = useState([]);
   ///
