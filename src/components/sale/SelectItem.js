@@ -39,9 +39,7 @@ export const SelectItem = ({ search, salePerson }) => {
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(receivedData.length / itemsPerPage));
-    if (addItem.length !== initialStock.length) {
-      initialStock.current = receivedData;
-    }
+    initialStock.current = receivedData;
   }, [itemOffset, itemsPerPage, receivedData]);
 
   const handlePageClick = (event) => {
