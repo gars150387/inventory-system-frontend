@@ -40,29 +40,6 @@ export const SalePerPeriod = () => {
     setItemOffset(newOffset);
   };
 
-  function createNode(value) {
-    return {
-      value: value,
-      next: null
-    };
-  }
-
-  function arrayToLinkedList() {
-    if (allOrdersPlaced.length === 0) {
-      return null;
-    }
-
-    let head = createNode(allOrdersPlaced[0]);
-    let current = head;
-
-    for (let i = 1; i < allOrdersPlaced.length; i++) {
-      current.next = createNode(allOrdersPlaced[i]);
-      current = current.next;
-    }
-
-    return head;
-  }
-
   return (
     <div
       style={{
