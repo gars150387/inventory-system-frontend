@@ -12,7 +12,7 @@ export const CustomerFormat = (order) => {
       width: "100%",
       margin: "0 auto",
     }}>
-      <table class="table">
+      <table className="table">
         <thead>
           <tr>
             <th scope="col">Producto</th>
