@@ -16,7 +16,7 @@ const IngresarInventario = () => {
   const [currentItemsRendered, setCurrentItemsRendered] = useState(null);
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 15;
 
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
@@ -145,7 +145,7 @@ const IngresarInventario = () => {
             />
           </div>
         </div>
-        {currentItemsRendered === null ? (
+        {receivedData === null ? (
           <div class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
@@ -156,20 +156,20 @@ const IngresarInventario = () => {
           >
             <table className="table table-sm">
               <caption>
-                <ReactPaginate
-                  breakLabel="..."
-                  nextLabel="next >"
-                  onPageChange={handlePageClick}
-                  pageRangeDisplayed={5}
-                  pageCount={pageCount}
-                  previousLabel="< previous"
-                  renderOnZeroPageCount={null}
-                  containerClassName="pagination"
-                  pageLinkClassName="page-num"
-                  previousLinkClassName="page-num"
-                  nextLinkClassName="page-num"
-                  activeLinkClassName="active"
-                />
+              <ReactPaginate
+                breakLabel="..."
+                nextLabel="next >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={2}
+                pageCount={pageCount}
+                previousLabel="< previous"
+                renderOnZeroPageCount={null}
+                containerClassName="pagination"
+                pageLinkClassName="page-num"
+                previousLinkClassName="page-num"
+                nextLinkClassName="page-num"
+                activeLinkClassName="active"
+              />
               </caption>
               <thead className="table-dark">
                 <tr>
@@ -193,7 +193,54 @@ const IngresarInventario = () => {
                 </tr>
               </thead>
               <tbody>
-                {receivedData
+                {search === "" ? currentItemsRendered?.map((item) => {
+                    return (
+                      <>
+                        <tr key={item._id}>
+                          {adminUser.role === "Administrador" && (
+                            <td>
+                              <p
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleEditItem(item)}
+                              >
+                                Editar Item
+                              </p>
+                            </td>
+                          )}
+
+                          <td>{item.name}</td>
+                          <td>{item.brand}</td>
+                          <td>{item.color}</td>
+                          <td>{item.size}</td>
+                          <td>{item.resume}</td>
+                          <td>{item.quantity}</td>
+                          {adminUser.role === "Administrador" && (
+                            <td>{item.cost}</td>
+                          )}
+                          <td>{item.price}</td>
+                          <td>
+                            <p
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handleEditQuantity(item)}
+                            >
+                              Editar
+                            </p>
+                          </td>
+                          {adminUser.role === "Administrador" && (
+                            <td>
+                              <p
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleDeleteItem(item)}
+                              >
+                                Eliminar
+                              </p>
+                            </td>
+                          )}
+                        </tr>
+                      </>
+                    );
+                  })
+                  : receivedData
                   ?.filter((item) =>
                     item.resume.toLowerCase().includes(search.toLowerCase())
                   )
