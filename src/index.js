@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
-import { MemoryRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { store } from "./store/store";
 import { Provider } from "react-redux";
 import { PersistGate } from 'redux-persist/integration/react'
@@ -16,11 +16,11 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-       <MemoryRouter>
+       <BrowserRouter>
       <React.StrictMode>
         <App />
       </React.StrictMode>
-    </MemoryRouter>
+    </BrowserRouter>
     </PersistGate>
   </Provider>
 );
