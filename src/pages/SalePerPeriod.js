@@ -3,7 +3,7 @@ import { apiBase } from "../components/api/Api";
 import ReactPaginate from "react-paginate";
 import { CustomerFormat } from "../components/sale/CustomerFormat";
 import DatePicker from "react-datepicker";
-import "../style/component/paginate.css"
+import "../style/component/paginate.css";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { useInterval } from "interval-hooks";
@@ -26,12 +26,12 @@ export const SalePerPeriod = () => {
   };
   useEffect(() => {
     callApiToRenderAllOrdersPlaced();
-  }, [itemOffset, itemsPerPage, allOrdersPlaced])
-  
+  }, [itemOffset, itemsPerPage, allOrdersPlaced]);
 
+  const reverseArray = [...allOrdersPlaced].reverse();
   useInterval(() => {
     const endOffset = itemOffset + itemsPerPage;
-    setCurrentItemsRendered(allOrdersPlaced.slice(itemOffset, endOffset));
+    setCurrentItemsRendered(reverseArray.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(allOrdersPlaced.length / itemsPerPage));
   }, 2_00);
 
@@ -40,13 +40,36 @@ export const SalePerPeriod = () => {
     setItemOffset(newOffset);
   };
 
+  function createNode(value) {
+    return {
+      value: value,
+      next: null
+    };
+  }
+
+  function arrayToLinkedList() {
+    if (allOrdersPlaced.length === 0) {
+      return null;
+    }
+
+    let head = createNode(allOrdersPlaced[0]);
+    let current = head;
+
+    for (let i = 1; i < allOrdersPlaced.length; i++) {
+      current.next = createNode(allOrdersPlaced[i]);
+      current = current.next;
+    }
+
+    return head;
+  }
+
   return (
     <div
       style={{
         display: "flex",
         justifyContent: "space-around",
         width: "95%",
-        gap: "2%",
+        gap: "2%"
       }}
     >
       <div style={{ width: "60%", margin: "0 0% 0% 3%" }}>
