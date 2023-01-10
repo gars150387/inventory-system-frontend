@@ -6,6 +6,7 @@ import { apiBase } from "../api/Api";
 import ReactPaginate from "react-paginate";
 import { ReceiptFormat } from "./ReceiptFormat";
 import "../../style/component/paginate.css";
+import { useInterval } from "interval-hooks";
 
 let objItem = {
   name: "",
@@ -13,7 +14,7 @@ let objItem = {
   color: "",
   size: "",
   resume: "",
-  quantity: "",
+  quantity: ""
 };
 export const SelectItem = ({ search, salePerson }) => {
   const [receivedData, setReceivedData] = useState([]);
@@ -35,13 +36,15 @@ export const SelectItem = ({ search, salePerson }) => {
     }
   };
   useEffect(() => {
-    callApiInventoryResume();
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(receivedData.length / itemsPerPage));
     initialStock.current = receivedData;
   }, [itemOffset, itemsPerPage, receivedData]);
 
+  useInterval(() => {
+    callApiInventoryResume();
+  }, 1_00);
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % receivedData.length;
     setItemOffset(newOffset);
@@ -57,7 +60,7 @@ export const SelectItem = ({ search, salePerson }) => {
       input: "text",
       inputAttributes: {
         autocapitalize: "off",
-        placeholder: `Agregar cantidad`,
+        placeholder: `Agregar cantidad`
       },
       showCancelButton: true,
       confirmButtonText: "Agregar",
@@ -74,7 +77,7 @@ export const SelectItem = ({ search, salePerson }) => {
           }
         }
       },
-      allowOutsideClick: () => !Swal.isLoading(),
+      allowOutsideClick: () => !Swal.isLoading()
     });
   };
 
@@ -87,7 +90,7 @@ export const SelectItem = ({ search, salePerson }) => {
     }
   };
 
-  let totalToDisplay;
+  let totalToDisplay = 0;
   const sumPriceInOrder = async () => {
     const initalState = 0;
     let totalAccru = [];
@@ -104,6 +107,10 @@ export const SelectItem = ({ search, salePerson }) => {
     ));
   };
   sumPriceInOrder();
+  console.log(
+    "🚀 ~ file: SelectItem.js:403 ~ SelectItem ~ totalToDisplay",
+    totalToDisplay
+  );
 
   let totalItemsInOrderToDisplay;
   const sumItemsInOrder = async () => {
@@ -145,7 +152,7 @@ export const SelectItem = ({ search, salePerson }) => {
 
           apiBase.put(`/item/edit-item-quantity/${referenceData[i]._id}`, {
             ...receivedData[i],
-            quantity: total,
+            quantity: total
           });
         }
       }
@@ -157,7 +164,7 @@ export const SelectItem = ({ search, salePerson }) => {
         title: "Favor ingresar el nombre del cliente",
         input: "text",
         inputAttributes: {
-          autocapitalize: "off",
+          autocapitalize: "off"
         },
         showCancelButton: true,
         confirmButtonText: "Procesar",
@@ -170,12 +177,12 @@ export const SelectItem = ({ search, salePerson }) => {
               cliente,
               addItem,
               totalToDisplay,
-              salePerson,
+              salePerson
             });
           } catch (error) {
             Swal.showValidationMessage(`Request failed: ${error}`);
           }
-        },
+        }
       });
     } else {
       alert("Favor selecciona un vendedor antes de procesar la orden");
@@ -284,7 +291,7 @@ export const SelectItem = ({ search, salePerson }) => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            margin: " 0 auto",
+            margin: " 0 auto"
           }}
         >
           <label>
@@ -295,7 +302,7 @@ export const SelectItem = ({ search, salePerson }) => {
           </label>
 
           <label>
-            Total a pagar: <strong>${totalToDisplay}</strong>
+            Total a pagar: <strong>${totalToDisplay.toFixed(2)}</strong>
           </label>
           <button onClick={handleProcessOrder}>Procesar orden</button>
         </div>
@@ -312,7 +319,7 @@ export const SelectItem = ({ search, salePerson }) => {
                     height: "13vh",
                     margin: "1% auto",
                     borderTop: "dashed 1px #212529",
-                    borderBottom: "dashed 1px #212529",
+                    borderBottom: "dashed 1px #212529"
                   }}
                   key={_id}
                 >
@@ -341,7 +348,7 @@ export const SelectItem = ({ search, salePerson }) => {
                       width: "25%",
                       margin: "0 2%",
                       display: "flex",
-                      flexDirection: "column",
+                      flexDirection: "column"
                     }}
                   >
                     <label>
