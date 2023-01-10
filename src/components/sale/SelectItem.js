@@ -107,11 +107,6 @@ export const SelectItem = ({ search, salePerson }) => {
     ));
   };
   sumPriceInOrder();
-  console.log(
-    "🚀 ~ file: SelectItem.js:403 ~ SelectItem ~ totalToDisplay",
-    totalToDisplay
-  );
-
   let totalItemsInOrderToDisplay;
   const sumItemsInOrder = async () => {
     const initalState = 0;
@@ -134,22 +129,8 @@ export const SelectItem = ({ search, salePerson }) => {
     let referenceData = initialStock.current;
     for (let j = 0; j < addItem.length; j++) {
       for (let i = 0; i < referenceData.length; i++) {
-        console.log(
-          "🚀 ~ file: SelectItem.js:137 ~ modifyItemQuantityAfterOrder ~ addItem",
-          addItem[j]
-        );
-        console.log(
-          "🚀 ~ file: SelectItem.js:138 ~ modifyItemQuantityAfterOrder ~ referenceData",
-          referenceData[i]
-        );
-
         if (addItem[j]._id === referenceData[i]._id) {
           let total = referenceData[i].quantity - addItem[j].quantity;
-          console.log(
-            "🚀 ~ file: SelectItem.js:139 ~ modifyItemQuantityAfterOrder ~ total",
-            total
-          );
-
           apiBase.put(`/item/edit-item-quantity/${referenceData[i]._id}`, {
             ...receivedData[i],
             quantity: total
