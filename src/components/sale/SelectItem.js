@@ -29,26 +29,23 @@ export const SelectItem = ({ search, salePerson }) => {
 
   const initialStock = useRef();
 
+
+  useEffect(() => {
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
     if (response) {
       setReceivedData(response.data.inventory);
     }
   };
-  useEffect(() => {
-    const controller = new AbortController();
     callApiInventoryResume()
-    return () => {
-      controller.abort()
-    }
-  }, [callApiInventoryResume])
+  }, [])
   
   useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(receivedData.length / itemsPerPage));
     initialStock.current = receivedData;
-  }, []);
+  }, [itemOffset, receivedData]);
 
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % receivedData.length;

@@ -25,15 +25,16 @@ const IngresarInventario = () => {
     }
   };
 
-  const paginationFunction = async () => {
-    const endOffset = itemOffset + itemsPerPage;
-    setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(receivedData.length / itemsPerPage));
-  };
-
   useEffect(() => {
-    callApiInventoryResume();
-    paginationFunction();
+    const paginationFunction = async () => {
+      const endOffset = itemOffset + itemsPerPage;
+      setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
+      setPageCount(Math.ceil(receivedData.length / itemsPerPage));
+    };
+    return () => {
+      callApiInventoryResume();
+      paginationFunction();
+    };
   }, [itemOffset, itemsPerPage, receivedData, itemInfoToModal]);
 
   const handlePageClick = (event) => {

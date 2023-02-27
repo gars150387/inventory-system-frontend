@@ -29,11 +29,15 @@ export const SalePerPeriod = () => {
   }, [itemOffset, itemsPerPage, allOrdersPlaced]);
 
   const reverseArray = [...allOrdersPlaced].reverse();
+
   useEffect(() => {
-    const endOffset = itemOffset + itemsPerPage;
-    setCurrentItemsRendered(reverseArray.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(allOrdersPlaced.length / itemsPerPage));
-  }, []);
+    const paginationEffect = () => {
+      const endOffset = itemOffset + itemsPerPage;
+      setCurrentItemsRendered(reverseArray.slice(itemOffset, endOffset));
+      setPageCount(Math.ceil(allOrdersPlaced.length / itemsPerPage));
+    };
+    paginationEffect();
+  }, [allOrdersPlaced.length,itemOffset,reverseArray]);
 
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % allOrdersPlaced.length;
