@@ -7,6 +7,7 @@ import { EditItemModal } from "../components/ui/EditItemModal";
 import "../style/component/paginate.css";
 
 const IngresarInventario = () => {
+  const [displayChanges, setDisplayChanges] = useState(false);
   const [search, setSearch] = useState("");
   const [receivedData, setReceivedData] = useState([]);
   const [modalState, setModalState] = useState(false);
@@ -16,17 +17,13 @@ const IngresarInventario = () => {
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
     if (response) {
-      console.log(
-        "🚀 ~ file: IngresarInventario.js:24 ~ callApiInventoryResume ~ response:",
-        response
-      );
       setReceivedData(response.data.inventory);
     }
   };
 
   useEffect(() => {
     callApiInventoryResume();
-  }, []);
+  }, [displayChanges]);
 
   const handleEditQuantity = async (item) => {
     for (let i = 0; i < receivedData.length; i++) {
@@ -54,6 +51,7 @@ const IngresarInventario = () => {
               title: `${item.name}, ${item.brand}`,
               text: "El inventario fue actualizado"
             });
+            setDisplayChanges(!displayChanges);
           }
         });
       }
@@ -63,6 +61,7 @@ const IngresarInventario = () => {
   const handleEditItem = async (item) => {
     setModalState(true);
     setItemInfoToModal(item);
+    setDisplayChanges(!displayChanges);
   };
 
   const handleDeleteItem = async (item) => {
@@ -107,6 +106,7 @@ const IngresarInventario = () => {
                 "La accion fue cancelada",
                 "error"
               );
+              setDisplayChanges(!displayChanges);
             }
           });
       }
