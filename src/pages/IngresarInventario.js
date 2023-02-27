@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { FormatToFeedStock } from "../components/feedStock/FormatToFeedStock";
 import { useSelector } from "react-redux";
 import { apiBase } from "../components/api/Api";
-import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
 import { EditItemModal } from "../components/ui/EditItemModal";
 import "../style/component/paginate.css";
@@ -13,34 +12,21 @@ const IngresarInventario = () => {
   const [modalState, setModalState] = useState(false);
   const [itemInfoToModal, setItemInfoToModal] = useState("");
   const { adminUser } = useSelector((state) => state.admin);
-  const [currentItemsRendered, setCurrentItemsRendered] = useState(null);
-  const [pageCount, setPageCount] = useState(0);
-  const [itemOffset, setItemOffset] = useState(0);
-  const itemsPerPage = 15;
 
   const callApiInventoryResume = async () => {
     const response = await apiBase.get("/item/inventory");
     if (response) {
+      console.log(
+        "🚀 ~ file: IngresarInventario.js:24 ~ callApiInventoryResume ~ response:",
+        response
+      );
       setReceivedData(response.data.inventory);
     }
   };
 
   useEffect(() => {
-    const paginationFunction = async () => {
-      const endOffset = itemOffset + itemsPerPage;
-      setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
-      setPageCount(Math.ceil(receivedData.length / itemsPerPage));
-    };
-    return () => {
-      callApiInventoryResume();
-      paginationFunction();
-    };
-  }, [itemOffset, itemsPerPage, receivedData, itemInfoToModal]);
-
-  const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % receivedData.length;
-    setItemOffset(newOffset);
-  };
+    callApiInventoryResume();
+  }, []);
 
   const handleEditQuantity = async (item) => {
     for (let i = 0; i < receivedData.length; i++) {
@@ -156,26 +142,15 @@ const IngresarInventario = () => {
           </div>
         ) : (
           <div
-            style={{ width: "95%", margin: "0 auto" }}
+            style={{
+              width: "95%",
+              margin: "0 auto",
+              maxHeight: "50vh",
+              overflow: "scroll"
+            }}
             className="table-responsive"
           >
             <table className="table table-sm">
-              <caption>
-                <ReactPaginate
-                  breakLabel="..."
-                  nextLabel="next >"
-                  onPageChange={handlePageClick}
-                  pageRangeDisplayed={2}
-                  pageCount={pageCount}
-                  previousLabel="< previous"
-                  renderOnZeroPageCount={null}
-                  containerClassName="pagination"
-                  pageLinkClassName="page-num"
-                  previousLinkClassName="page-num"
-                  nextLinkClassName="page-num"
-                  activeLinkClassName="active"
-                />
-              </caption>
               <thead className="table-dark">
                 <tr>
                   {adminUser.role === "Administrador" && (
@@ -199,7 +174,7 @@ const IngresarInventario = () => {
               </thead>
               <tbody>
                 {search === ""
-                  ? currentItemsRendered?.map((item) => {
+                  ? receivedData?.map((item) => {
                       return (
                         <>
                           <tr key={item._id}>
