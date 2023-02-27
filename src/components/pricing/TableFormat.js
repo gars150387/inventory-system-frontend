@@ -1,5 +1,5 @@
-import { useInterval } from "interval-hooks";
-import React, { useState } from "react";
+// import { useInterval } from "interval-hooks";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { apiBase } from "../api/Api";
 import { Pagination } from "../helper/Pagination";
@@ -29,9 +29,9 @@ export const TableFormat = ({ search }) => {
     }
   };
 
-  useInterval(() => {
+  useEffect(() => {
     callApiInventoryResume();
-  }, 2_00);
+  }, []);
 
   return (
     <div>

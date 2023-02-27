@@ -6,7 +6,7 @@ import { apiBase } from "../api/Api";
 import ReactPaginate from "react-paginate";
 import { ReceiptFormat } from "./ReceiptFormat";
 import "../../style/component/paginate.css";
-import { useInterval } from "interval-hooks";
+// import { useInterval } from "interval-hooks";
 
 let objItem = {
   name: "",
@@ -36,15 +36,20 @@ export const SelectItem = ({ search, salePerson }) => {
     }
   };
   useEffect(() => {
+    const controller = new AbortController();
+    callApiInventoryResume()
+    return () => {
+      controller.abort()
+    }
+  }, [callApiInventoryResume])
+  
+  useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(receivedData.length / itemsPerPage));
     initialStock.current = receivedData;
-  }, [itemOffset, itemsPerPage, receivedData]);
+  }, []);
 
-  useInterval(() => {
-    callApiInventoryResume();
-  }, 1_00);
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % receivedData.length;
     setItemOffset(newOffset);

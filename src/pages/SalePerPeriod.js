@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import "../style/component/paginate.css";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { useInterval } from "interval-hooks";
+// import { useInterval } from "interval-hooks";
 
 export const SalePerPeriod = () => {
   const [date, setDate] = useState(new Date());
@@ -29,11 +29,11 @@ export const SalePerPeriod = () => {
   }, [itemOffset, itemsPerPage, allOrdersPlaced]);
 
   const reverseArray = [...allOrdersPlaced].reverse();
-  useInterval(() => {
+  useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItemsRendered(reverseArray.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(allOrdersPlaced.length / itemsPerPage));
-  }, 2_00);
+  }, []);
 
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % allOrdersPlaced.length;

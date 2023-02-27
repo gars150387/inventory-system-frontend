@@ -5,10 +5,11 @@ import { Home } from "../pages/Home";
 import { Sale } from "../pages/Sale";
 import { SalePerPeriod } from "../pages/SalePerPeriod";
 import { UserRegistration } from "../pages/UserRegistration";
+import IngresarInventario from "../pages/IngresarInventario";
 
 export const RouteMain = () => {
   const { adminUser } = useSelector((state) => state.admin);
-  const IngresarInventario = lazy(() => import("../pages/IngresarInventario"));
+  // const IngresarInventario = lazy(() => import("../pages/IngresarInventario"));
   return (
     <>
       <Routes>

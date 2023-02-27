@@ -25,12 +25,16 @@ const IngresarInventario = () => {
     }
   };
 
-  useEffect(() => {
-    callApiInventoryResume();
+  const paginationFunction = async () => {
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(receivedData.length / itemsPerPage));
-  }, [itemOffset, itemsPerPage, receivedData]);
+  };
+
+  useEffect(() => {
+    callApiInventoryResume();
+    paginationFunction();
+  }, [itemOffset, itemsPerPage, receivedData, itemInfoToModal]);
 
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % receivedData.length;
@@ -45,7 +49,7 @@ const IngresarInventario = () => {
           input: "text",
           inputAttributes: {
             autocapitalize: "off",
-            placeholder: `Cantidad existente: ${item.quantity}`,
+            placeholder: `Cantidad existente: ${item.quantity}`
           },
           showCancelButton: true,
           confirmButtonText: "Guarda",
@@ -53,15 +57,15 @@ const IngresarInventario = () => {
           preConfirm: async (quantity) => {
             apiBase.put(`/item/edit-item-quantity/${item._id}`, {
               ...item,
-              quantity: quantity,
+              quantity: quantity
             });
           },
-          allowOutsideClick: () => !Swal.isLoading(),
+          allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
           if (result.isConfirmed) {
             Swal.fire({
               title: `${item.name}, ${item.brand}`,
-              text: "El inventario fue actualizado",
+              text: "El inventario fue actualizado"
             });
           }
         });
@@ -80,9 +84,9 @@ const IngresarInventario = () => {
         const swalWithBootstrapButtons = Swal.mixin({
           customClass: {
             confirmButton: "btn btn-success",
-            cancelButton: "btn btn-danger",
+            cancelButton: "btn btn-danger"
           },
-          buttonsStyling: false,
+          buttonsStyling: false
         });
 
         swalWithBootstrapButtons
@@ -93,7 +97,7 @@ const IngresarInventario = () => {
             showCancelButton: true,
             confirmButtonText: "Si, proceder!",
             cancelButtonText: "No, cancel!",
-            reverseButtons: true,
+            reverseButtons: true
           })
           .then(async (result) => {
             if (result.isConfirmed) {
@@ -133,7 +137,7 @@ const IngresarInventario = () => {
       <div>
         <div
           style={{
-            margin: "2% auto",
+            margin: "2% auto"
           }}
         >
           <div>
@@ -156,20 +160,20 @@ const IngresarInventario = () => {
           >
             <table className="table table-sm">
               <caption>
-              <ReactPaginate
-                breakLabel="..."
-                nextLabel="next >"
-                onPageChange={handlePageClick}
-                pageRangeDisplayed={2}
-                pageCount={pageCount}
-                previousLabel="< previous"
-                renderOnZeroPageCount={null}
-                containerClassName="pagination"
-                pageLinkClassName="page-num"
-                previousLinkClassName="page-num"
-                nextLinkClassName="page-num"
-                activeLinkClassName="active"
-              />
+                <ReactPaginate
+                  breakLabel="..."
+                  nextLabel="next >"
+                  onPageChange={handlePageClick}
+                  pageRangeDisplayed={2}
+                  pageCount={pageCount}
+                  previousLabel="< previous"
+                  renderOnZeroPageCount={null}
+                  containerClassName="pagination"
+                  pageLinkClassName="page-num"
+                  previousLinkClassName="page-num"
+                  nextLinkClassName="page-num"
+                  activeLinkClassName="active"
+                />
               </caption>
               <thead className="table-dark">
                 <tr>
@@ -193,104 +197,105 @@ const IngresarInventario = () => {
                 </tr>
               </thead>
               <tbody>
-                {search === "" ? currentItemsRendered?.map((item) => {
-                    return (
-                      <>
-                        <tr key={item._id}>
-                          {adminUser.role === "Administrador" && (
-                            <td>
-                              <p
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleEditItem(item)}
-                              >
-                                Editar Item
-                              </p>
-                            </td>
-                          )}
+                {search === ""
+                  ? currentItemsRendered?.map((item) => {
+                      return (
+                        <>
+                          <tr key={item._id}>
+                            {adminUser.role === "Administrador" && (
+                              <td>
+                                <p
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => handleEditItem(item)}
+                                >
+                                  Editar Item
+                                </p>
+                              </td>
+                            )}
 
-                          <td>{item.name}</td>
-                          <td>{item.brand}</td>
-                          <td>{item.color}</td>
-                          <td>{item.size}</td>
-                          <td>{item.resume}</td>
-                          <td>{item.quantity}</td>
-                          {adminUser.role === "Administrador" && (
-                            <td>{item.cost}</td>
-                          )}
-                          <td>{item.price}</td>
-                          <td>
-                            <p
-                              style={{ cursor: "pointer" }}
-                              onClick={() => handleEditQuantity(item)}
-                            >
-                              Editar
-                            </p>
-                          </td>
-                          {adminUser.role === "Administrador" && (
+                            <td>{item.name}</td>
+                            <td>{item.brand}</td>
+                            <td>{item.color}</td>
+                            <td>{item.size}</td>
+                            <td>{item.resume}</td>
+                            <td>{item.quantity}</td>
+                            {adminUser.role === "Administrador" && (
+                              <td>{item.cost}</td>
+                            )}
+                            <td>{item.price}</td>
                             <td>
                               <p
                                 style={{ cursor: "pointer" }}
-                                onClick={() => handleDeleteItem(item)}
+                                onClick={() => handleEditQuantity(item)}
                               >
-                                Eliminar
+                                Editar
                               </p>
                             </td>
-                          )}
-                        </tr>
-                      </>
-                    );
-                  })
+                            {adminUser.role === "Administrador" && (
+                              <td>
+                                <p
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => handleDeleteItem(item)}
+                                >
+                                  Eliminar
+                                </p>
+                              </td>
+                            )}
+                          </tr>
+                        </>
+                      );
+                    })
                   : receivedData
-                  ?.filter((item) =>
-                    item.resume.toLowerCase().includes(search.toLowerCase())
-                  )
-                  .map((item) => {
-                    return (
-                      <>
-                        <tr key={item._id}>
-                          {adminUser.role === "Administrador" && (
-                            <td>
-                              <p
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleEditItem(item)}
-                              >
-                                Editar Item
-                              </p>
-                            </td>
-                          )}
+                      ?.filter((item) =>
+                        item.resume.toLowerCase().includes(search.toLowerCase())
+                      )
+                      .map((item) => {
+                        return (
+                          <>
+                            <tr key={item._id}>
+                              {adminUser.role === "Administrador" && (
+                                <td>
+                                  <p
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => handleEditItem(item)}
+                                  >
+                                    Editar Item
+                                  </p>
+                                </td>
+                              )}
 
-                          <td>{item.name}</td>
-                          <td>{item.brand}</td>
-                          <td>{item.color}</td>
-                          <td>{item.size}</td>
-                          <td>{item.resume}</td>
-                          <td>{item.quantity}</td>
-                          {adminUser.role === "Administrador" && (
-                            <td>{item.cost}</td>
-                          )}
-                          <td>{item.price}</td>
-                          <td>
-                            <p
-                              style={{ cursor: "pointer" }}
-                              onClick={() => handleEditQuantity(item)}
-                            >
-                              Editar
-                            </p>
-                          </td>
-                          {adminUser.role === "Administrador" && (
-                            <td>
-                              <p
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleDeleteItem(item)}
-                              >
-                                Eliminar
-                              </p>
-                            </td>
-                          )}
-                        </tr>
-                      </>
-                    );
-                  })}
+                              <td>{item.name}</td>
+                              <td>{item.brand}</td>
+                              <td>{item.color}</td>
+                              <td>{item.size}</td>
+                              <td>{item.resume}</td>
+                              <td>{item.quantity}</td>
+                              {adminUser.role === "Administrador" && (
+                                <td>{item.cost}</td>
+                              )}
+                              <td>{item.price}</td>
+                              <td>
+                                <p
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => handleEditQuantity(item)}
+                                >
+                                  Editar
+                                </p>
+                              </td>
+                              {adminUser.role === "Administrador" && (
+                                <td>
+                                  <p
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => handleDeleteItem(item)}
+                                  >
+                                    Eliminar
+                                  </p>
+                                </td>
+                              )}
+                            </tr>
+                          </>
+                        );
+                      })}
               </tbody>
             </table>
           </div>
