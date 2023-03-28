@@ -6,19 +6,11 @@ import { apiBase } from "../api/Api";
 import ReactPaginate from "react-paginate";
 import { ReceiptFormat } from "./ReceiptFormat";
 import "../../style/component/paginate.css";
-// import { useInterval } from "interval-hooks";
 
-let objItem = {
-  name: "",
-  brand: "",
-  color: "",
-  size: "",
-  resume: "",
-  quantity: ""
-};
 export const SelectItem = ({ search, salePerson }) => {
   const [receivedData, setReceivedData] = useState([]);
   const [addItem, setAddItem] = useState([]);
+  console.log("🚀 ~ file: SelectItem.js:21 ~ SelectItem ~ addItem:", addItem);
   const { adminUser } = useSelector((state) => state.admin);
   const { newOrderCall, currentOrderProcessed, showReceipt } = useOrder();
   const [currentItemsRendered, setCurrentItemsRendered] = useState(null);
@@ -26,20 +18,25 @@ export const SelectItem = ({ search, salePerson }) => {
   const [itemOffset, setItemOffset] = useState(0);
   const itemsPerPage = 10;
   const { _id, clientName, order, time, total } = currentOrderProcessed;
+  const dataMap = new Map();
+  console.log("🚀 ~ file: SelectItem.js:30 ~ SelectItem ~ dataMap:", dataMap);
 
   const initialStock = useRef();
-
-
-  useEffect(() => {
-  const callApiInventoryResume = async () => {
-    const response = await apiBase.get("/item/inventory");
-    if (response) {
-      setReceivedData(response.data.inventory);
+  for (let data of receivedData) {
+    if (!dataMap.has(data._id)) {
+      dataMap.set(data._id, data);
     }
-  };
-    callApiInventoryResume()
-  }, [])
-  
+  }
+  useEffect(() => {
+    const callApiInventoryResume = async () => {
+      const response = await apiBase.get("/item/inventory");
+      if (response) {
+        setReceivedData(response.data.inventory);
+      }
+    };
+    callApiInventoryResume();
+  }, []);
+
   useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItemsRendered(receivedData.slice(itemOffset, endOffset));
@@ -70,11 +67,12 @@ export const SelectItem = ({ search, salePerson }) => {
       preConfirm: async (quantity) => {
         if (quantity > item.quantity)
           return alert("No hay suficiente en existencia");
-        objItem = item;
-        objItem.quantity = quantity;
-        if (objItem.quantity !== "") {
-          const listOfItemAdded = [...addItem, objItem];
-          if (listOfItemAdded !== []) {
+        if (quantity !== "") {
+          const listOfItemAdded = [
+            ...addItem,
+            { ...item, quantity: parseInt(quantity) }
+          ];
+          if (listOfItemAdded.length > 0) {
             setAddItem(listOfItemAdded);
           }
         }
@@ -128,16 +126,26 @@ export const SelectItem = ({ search, salePerson }) => {
   sumItemsInOrder();
 
   const modifyItemQuantityAfterOrder = async () => {
-    let referenceData = initialStock.current;
     for (let j = 0; j < addItem.length; j++) {
-      for (let i = 0; i < referenceData.length; i++) {
-        if (addItem[j]._id === referenceData[i]._id) {
-          let total = referenceData[i].quantity - addItem[j].quantity;
-          apiBase.put(`/item/edit-item-quantity/${referenceData[i]._id}`, {
-            ...receivedData[i],
-            quantity: total
-          });
-        }
+      console.log(
+        "🚀 ~ file: SelectItem.js:138 ~ modifyItemQuantityAfterOrder ~ addItem:",
+        addItem[j]
+      );
+      if (dataMap.has(addItem[j]._id)) {
+        console.log(
+          "🚀 ~ file: SelectItem.js:140 ~ modifyItemQuantityAfterOrder ~ addItem[j]._id:",
+          addItem[j]._id
+        );
+        let total = dataMap.get(addItem[j]._id).quantity - addItem[j].quantity;
+        console.log(
+          "🚀 ~ file: SelectItem.js:144 ~ modifyItemQuantityAfterOrder ~ total:",
+          total
+        );
+
+        apiBase.put(`/item/edit-item-quantity/${addItem[j]._id}`, {
+          ...addItem[j]._id,
+          quantity: total
+        });
       }
     }
   };
