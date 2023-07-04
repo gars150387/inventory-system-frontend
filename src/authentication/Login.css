@@ -1,0 +1,9 @@
+.ant-notification-notice-icon-error.anticon {
+    color: #ff4d4f;
+    position: absolute;
+    left: 1rem;
+}
+.ant-notification-notice-description {
+    margin-inline-start: 0px;
+    font-size: 14px;
+}
