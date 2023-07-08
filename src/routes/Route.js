@@ -2,7 +2,6 @@ import React from "react";
 import { Route, Routes } from "react-router";
 import { useSelector } from "react-redux";
 import { Home } from "../pages/Home";
-import { Sale } from "../pages/Sale";
 import { SalePerPeriod } from "../pages/SalePerPeriod";
 import { UserRegistration } from "../pages/UserRegistration";
 import IngresarInventario from "../pages/IngresarInventario";
@@ -11,14 +10,12 @@ import PaginaPrincipalInventario from "../pages/PaginaPrincipalInventario";
 
 export const RouteMain = () => {
   const { adminUser } = useSelector((state) => state.admin);
-  // const IngresarInventario = lazy(() => import("../pages/IngresarInventario"));
   return (
     <>
       <Routes>
         {adminUser.token ? (
           <>
             <Route path="/register" element={<UserRegistration />} />
-            {/* <Route path="/sale" element={<Sale />} /> */}
             <Route path="/ventas" element={<PaginaPrincipalVentas />} />
             {adminUser.role === "Administrador" && (
               <Route path="/all-orders" element={<SalePerPeriod />} />
@@ -28,7 +25,6 @@ export const RouteMain = () => {
           <Route path="/" element={<Home />} />
         )}
       </Routes>
-      {/* <Suspense fallback={<h1>Loading...</h1>}> */}
       <Routes>
         {(adminUser.role === "Administrador"  && (
           <>
@@ -43,7 +39,6 @@ export const RouteMain = () => {
           </>
           ))}
       </Routes>
-      {/* </Suspense> */}
     </>
   );
 };

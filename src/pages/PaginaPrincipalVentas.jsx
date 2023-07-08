@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { Icon } from "@iconify/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button, Grid, OutlinedInput, Typography } from "@mui/material";
 import { apiBase } from "../components/api/Api";
 import ItemsInTable from "../components/sale/ItemsInTable";
@@ -60,7 +60,7 @@ const PaginaPrincipalVentas = () => {
       total: totalAPagar()
     };
 
-    await apiBase.post("/item/new-order", newOrderToSubmit)
+    await apiBase.post("/item/new-order", newOrderToSubmit);
     await dispatch(onResetCart());
     setValue("client", "");
     setNewOrder(false);
@@ -74,8 +74,9 @@ const PaginaPrincipalVentas = () => {
   };
   const displayNotification = useCallback(() => {
     openNotificationWithIcon();
-  }, []);
-  if (newOrderSubmitQuery.isSuccess) return displayNotification();
+  }, [newOrderSubmitQuery.isSuccess]);
+  displayNotification();
+  
   if (adminUserList.isLoading) return <p>Cargando usuarios...</p>;
   if (adminUserList.data) {
     return (

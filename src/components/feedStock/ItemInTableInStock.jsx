@@ -59,37 +59,28 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const { role } = adminUser;
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch
-  } = useForm();
+  const { register, setValue, watch } = useForm();
   const inventoryQuery = useQuery({
     queryKey: ["inventory"],
     queryFn: () => apiBase.get("/item/inventory"),
+    cacheTime: 0
   });
 
   const queryClient = useQueryClient();
 
-  // const addNewItemInStockMutation = useMutation({
-  //   mutationFn: (newData) => apiBase.post(`/item/new-order`, newData),
-  //   onSuccess: queryClient.invalidateQueries(["inventory"])
-  // });
   const updateItemInStockMutation = useMutation({
     mutationFn: (newData) =>
       apiBase.put(`/item/edit-item-quantity/${newData._id}`, newData),
-    onSuccess: queryClient.invalidateQueries(["inventory"])
+      onSuccess: () => queryClient.invalidateQueries(["inventory"])
   });
 
   const deleteItemInStockMutation = useMutation({
     mutationFn: (record) => apiBase.delete(`/item/delete-item/${record._id}`),
-    onSuccess: queryClient.invalidateQueries(["inventory"])
+    onSuccess: () => queryClient.invalidateQueries(["inventory"])
   });
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState("");
-  const [data, setData] = useState(inventoryQuery.data?.data?.inventory);
+  const [setData] = useState(inventoryQuery.data?.data?.inventory);
   if (inventoryQuery.isLoading) return <p>Cargando inventario...</p>;
   if (inventoryQuery.data) {
     const handleDelete = (key) => {
@@ -129,6 +120,7 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
           };
           updateItemInStockMutation.mutate(newDataTemplate);
           setEditingKey("");
+
         } else {
           setData(newData);
           setEditingKey("");
@@ -362,37 +354,49 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
         render: (_, record) => {
           const editable = isEditing(record);
           return editable ? (
-            <span>
-              <Typography.Link
+            <span
+              style={{
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "center"
+              }}
+            >
+              <Typography
                 onClick={() => save(record)}
                 style={{
                   marginRight: 8
                 }}
               >
                 Guardar
-              </Typography.Link>
+              </Typography>
               <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
                 <a>Cancel</a>
               </Popconfirm>
             </span>
           ) : (
-            <>
-              <Typography.Link
+            <span
+              style={{
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "center"
+              }}
+            >
+              <Typography
                 style={{ marginRight: "1rem" }}
                 disabled={editingKey !== ""}
                 onClick={() => edit(record)}
               >
                 Editar
-              </Typography.Link>
-              <Typography.Link disabled={editingKey !== ""}>
+              </Typography>
+              <Typography disabled={editingKey !== ""}>
                 <Popconfirm
                   title="Sure to cancel?"
                   onConfirm={() => handleDelete(record)}
                 >
                   Borrar
                 </Popconfirm>
-              </Typography.Link>
-            </>
+              </Typography>
+            </span>
           );
         }
       }
