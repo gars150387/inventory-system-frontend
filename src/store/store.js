@@ -8,17 +8,19 @@ import {
   PAUSE,
   PERSIST,
   PURGE,
-  REGISTER,
+  REGISTER
 } from "redux-persist";
+import orderSlice from "./slices/orderSlice";
 
 const persistConfig = {
   key: "root",
   version: 1,
-  storage,
+  storage
 };
 
 const reducers = combineReducers({
   admin: adminUserSlice,
+  order: orderSlice
 });
 
 const persistedReducers = persistReducer(persistConfig, reducers);
@@ -28,7 +30,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }),
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
+      }
+    })
 });
