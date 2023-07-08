@@ -3,6 +3,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { onAddNewAdminUser } from "../../store/slices/adminSlice";
 import { useDispatch } from "react-redux";
+import { Grid } from "@mui/material";
+import { onResetCart } from "../../store/slices/orderSlice";
 
 export const Navbar = () => {
   const { adminUser } = useSelector((state) => state.admin);
@@ -16,99 +18,112 @@ export const Navbar = () => {
         name: "",
         email: "",
         token: "",
-        uid: "",
+        uid: ""
       })
     );
+    dispatch(onResetCart());
     navigate("/");
   };
   return (
-    <nav className="navbar navbar-expand-lg bg-light">
-      <div className="container-fluid">
-        <NavLink to="./">
+    <Grid
+      container
+      display={"flex"}
+      flexDirection={"row"}
+      alignItems={"center"}
+      style={{ border: "1px solid v#155EEF", height: "4rem" }}
+    >
+      <Grid
+        display={"flex"}
+        flexDirection={"row"}
+        alignItems={"center"}
+        justifyContent={"space-around"}
+        item
+        xs={10}
+      >
+        <Grid
+          display={"flex"}
+          flexDirection={"row"}
+          alignItems={"center"}
+          marginLeft={"2rem"}
+          item
+          xs={2}
+        >
           <a href="./" className="navbar-brand">
             Rosa Mistica
           </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-        </NavLink>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav">
-            {adminUser.token === "" && (
-              <NavLink to="./">
-                <li className="nav-item">
-                  <a href="./" className="nav-link active" aria-current="page">
-                    Inicio
-                  </a>
-                </li>
+        </Grid>
+        <Grid
+          display={"flex"}
+          flexDirection={"row"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+          gap={5}
+          item
+          xs={8}
+        >
+          {adminUser.token === "" && (
+            <NavLink to="./">
+              <a href="./" className="nav-link active" aria-current="page">
+                Inicio
+              </a>
+            </NavLink>
+          )}
+
+          {adminUser.token && (
+            <>
+              <NavLink to="./ventas">
+                <a href="./ventas" className="nav-link">
+                  Venta
+                </a>
               </NavLink>
-            )}
+            </>
+          )}
 
-            {adminUser.token && (
-              <>
-                <NavLink to="./sale">
-                  <li className="nav-item">
-                    <a href="./sale" className="nav-link">
-                      Venta
-                    </a>
-                  </li>
-                </NavLink>
-              </>
-            )}
-
-            {adminUser.role === "Administrador" && (
-              <>
-                <NavLink to="./register">
-                  <li className="nav-item">
-                    <a href="./register" className="nav-link">
-                      Nuevo Usuario
-                    </a>
-                  </li>
-                </NavLink>
-                <NavLink to="./all-orders">
-                  <li className="nav-item">
-                    <a href="./all-orders" className="nav-link">
-                      Ventas Totales
-                    </a>
-                  </li>
-                </NavLink>
-               
-              </>
-            )}
-            {adminUser.role === "Administrador" || adminUser.role === "Encargado" ?  (<NavLink to="./feed_stock">
-                  <li className="nav-item">
-                    <a href="./feed_stock" className="nav-link">
-                      Ingresar Inventario
-                    </a>
-                  </li>
-                </NavLink>) : null}
-            {adminUser.token && (
-              <>
-                <li className="nav-item">
-                  <a href="./" onClick={handleSignOut} className="nav-link">
-                    <strong>{adminUser.name}</strong>
-                  </a>
-                </li>
-                <NavLink to="./">
-                  <li className="nav-item">
-                    <a href="./" onClick={handleSignOut} className="nav-link">
-                      Cerrar sesion
-                    </a>
-                  </li>
-                </NavLink>
-              </>
-            )}
-          </ul>
-        </div>
-      </div>
-    </nav>
+          {adminUser.role === "Administrador" && (
+            <>
+              <NavLink to="./register">
+                <a href="./register" className="nav-link">
+                  Nuevo Usuario
+                </a>
+              </NavLink>
+              <NavLink to="./all-orders">
+                <a href="./all-orders" className="nav-link">
+                  Ventas Totales
+                </a>
+              </NavLink>
+            </>
+          )}
+          {adminUser.role === "Administrador" ||
+          adminUser.role === "Encargado" ? (
+            <NavLink to="./feed_stock">
+              <a href="./feed_stock" className="nav-link">
+                Ingresar Inventario
+              </a>
+            </NavLink>
+          ) : null}
+          {adminUser.token && (
+            <>
+              <a href="./" onClick={handleSignOut} className="nav-link">
+                <strong>{adminUser.name}</strong>
+              </a>
+            </>
+          )}
+        </Grid>
+        <Grid
+          display={"flex"}
+          justifyContent={"flex-end"}
+          alignItems={"center"}
+          item
+          xs={2}
+        >
+          {" "}
+          <NavLink to="./">
+            <a href="./" onClick={handleSignOut} className="nav-link">
+              Cerrar sesion
+            </a>
+          </NavLink>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
