@@ -6,6 +6,8 @@ import { Sale } from "../pages/Sale";
 import { SalePerPeriod } from "../pages/SalePerPeriod";
 import { UserRegistration } from "../pages/UserRegistration";
 import IngresarInventario from "../pages/IngresarInventario";
+import PaginaPrincipalVentas from "../pages/PaginaPrincipalVentas";
+import PaginaPrincipalInventario from "../pages/PaginaPrincipalInventario";
 
 export const RouteMain = () => {
   const { adminUser } = useSelector((state) => state.admin);
@@ -16,7 +18,8 @@ export const RouteMain = () => {
         {adminUser.token ? (
           <>
             <Route path="/register" element={<UserRegistration />} />
-            <Route path="/sale" element={<Sale />} />
+            {/* <Route path="/sale" element={<Sale />} /> */}
+            <Route path="/ventas" element={<PaginaPrincipalVentas />} />
             {adminUser.role === "Administrador" && (
               <Route path="/all-orders" element={<SalePerPeriod />} />
             )}
@@ -26,14 +29,20 @@ export const RouteMain = () => {
         )}
       </Routes>
       {/* <Suspense fallback={<h1>Loading...</h1>}> */}
-        <Routes>
-          {(adminUser.role === "Administrador" && (
-            <Route path="/feed_stock" element={<IngresarInventario />} />
-          )) ||
-            (adminUser.role === "Encargado" && (
-              <Route path="/feed_stock" element={<IngresarInventario />} />
-            ))}
-        </Routes>
+      <Routes>
+        {(adminUser.role === "Administrador"  && (
+          <>
+            <Route path="/feed_stock" element={<IngresarInventario />} />{" "}
+            <Route path="/inventario" element={<PaginaPrincipalInventario />} />{" "}
+          </>
+        )) ||
+          (adminUser.role === "Encargado" && (
+            <>
+            <Route path="/feed_stock" element={<IngresarInventario />} />{" "}
+            <Route path="/inventario" element={<PaginaPrincipalInventario />} />{" "}
+          </>
+          ))}
+      </Routes>
       {/* </Suspense> */}
     </>
   );
