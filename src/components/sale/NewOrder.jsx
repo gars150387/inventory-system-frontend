@@ -14,6 +14,8 @@ import {
   onEditItemInOrder
 } from "../../store/slices/orderSlice";
 import { Grid } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { apiBase } from "../api/Api";
 
 const EditableCell = ({
   editing,
@@ -56,10 +58,16 @@ const NewOrder = () => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState("");
 
+
+  const inventoryQuery = useQuery({
+    queryKey:[['inventoryList']],
+    queryFn:() => apiBase.get("/item/inventory")
+  })
   const handleDelete = (key) => {
     const newData = order?.filter((article) => article._id !== key._id);
     dispatch(onDeleteItemInCart(newData));
   };
+
   const isEditing = (record) => record._id === editingKey;
   const edit = (record) => {
     form.setFieldsValue({
@@ -74,10 +82,11 @@ const NewOrder = () => {
   const save = async (key) => {
     try {
       const row = await form.validateFields();
-      if (row.quantity > key.quantity) {
+      const newData = [...order];
+      const quantityRef = await inventoryQuery?.data?.data?.inventory?.find((item) => item._id === key._id);
+      if (row.quantity > quantityRef.quantity) {
         return alert("Cantidad superior a inventario");
       }
-      const newData = [...order];
       const index = await order?.findIndex((item) => item._id === key._id);
       if (index > -1) {
         const item = newData[index];
