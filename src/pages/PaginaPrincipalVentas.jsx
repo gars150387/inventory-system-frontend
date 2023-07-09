@@ -34,7 +34,7 @@ const PaginaPrincipalVentas = () => {
   const updateQuantityInStockMutation = useMutation({
     mutationFn: (data) =>
       apiBase.put(`/item/edit-item-quantity/${data._id}`, data),
-    onSuccess: () => queryClient.invalidateQueries(["listOfAdminUser"])
+    onSuccess: () => queryClient.invalidateQueries(["listOfAdminUser", "inventory"])
   });
   const totalAPagar = () => {
     let firstResult = [];
