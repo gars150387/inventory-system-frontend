@@ -316,7 +316,7 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
         typeof: Number,
         editable:
           (role === "Administrador" && true) ||
-          (role === "Administrador" && true)
+          (role === "Encargado" && true)
       },
       {
         title: "Costo",
@@ -434,10 +434,6 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
         price: parseInt(watch("price"))
       };
       const resp = await apiBase.post(`/item/new-order`, newData);
-      console.log(
-        "🚀 ~ file: ItemInTableInStock.jsx:434 ~ handleSubmitNewItem ~ resp:",
-        resp
-      );
       if (resp) {
         setValue("brand", "");
         setValue("name", "");
