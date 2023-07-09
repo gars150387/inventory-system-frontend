@@ -19,18 +19,27 @@ export const RouteMain = () => {
             {adminUser.role === "Administrador" && (
               <Route path="/all-orders" element={<SalePerPeriod />} />
             )}
+            {adminUser.role === "Administrador" && (
+              <>
+                <Route
+                  path="/inventario"
+                  element={<PaginaPrincipalInventario />}
+                />{" "}
+              </>
+            )}
+            {adminUser.role === "Encargado" && (
+              <>
+                <Route
+                  path="/inventario"
+                  element={<PaginaPrincipalInventario />}
+                />{" "}
+              </>
+            )}
             <Route path="/*" element={<Navigate to="/ventas" replace />} />
           </>
         ) : (
           <Route path="/" element={<Home />} />
         )}
-      </Routes>
-      <Routes>
-        {(adminUser.role === "Administrador"  && (
-          <>
-            <Route path="/inventario" element={<PaginaPrincipalInventario />} />{" "}
-          </>
-        ))}
       </Routes>
     </>
   );
