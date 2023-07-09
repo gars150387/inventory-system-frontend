@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Grid, OutlinedInput, Typography } from "@mui/material";
 import { apiBase } from "../components/api/Api";
 import ItemsInTable from "../components/sale/ItemsInTable";
@@ -9,9 +9,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { onResetCart } from "../store/slices/orderSlice";
 import { Popconfirm, notification } from "antd";
 import { useForm } from "react-hook-form";
+import { onResetCartRef } from "../store/slices/cartRefSlice";
 
 const PaginaPrincipalVentas = () => {
   const { order } = useSelector((state) => state.order);
+  const { cartRef } = useSelector((state) => state.cartRef);
   const { adminUser } = useSelector((state) => state.admin);
   const [newOrder, setNewOrder] = useState(false);
   const dispatch = useDispatch();
@@ -27,6 +29,13 @@ const PaginaPrincipalVentas = () => {
     queryFn: () => apiBase.get("/admin/admin-user")
   });
 
+  const queryClient = useQueryClient();
+
+  const updateQuantityInStockMutation = useMutation({
+    mutationFn: (data) =>
+      apiBase.put(`/item/edit-item-quantity/${data._id}`, data),
+    onSuccess: () => queryClient.invalidateQueries(["listOfAdminUser"])
+  });
   const totalAPagar = () => {
     let firstResult = [];
     let index = 0;
@@ -53,11 +62,19 @@ const PaginaPrincipalVentas = () => {
 
   const handleCancelOrder = () => {
     dispatch(onResetCart());
+    dispatch(onResetCartRef());
     setNewOrder(false);
   };
 
+  const updateQuantityInStockAfterPlaceOrder = async () => {
+    for (let data of order) {
+      const checkRef = cartRef.find((item) => item._id === data._id);
+      let newQuantityToSave = checkRef.quantity - data.quantity;
+      updateQuantityInStockMutation.mutate({ ...data, quantity: newQuantityToSave });
+    }
+  };
   const handleSubmitOrder = async () => {
-    let index = 0
+    let index = 0;
     let newOrderToSubmit = {
       clientName: watch("client"),
       salePerson: `${adminUser.email}`,
@@ -67,11 +84,11 @@ const PaginaPrincipalVentas = () => {
 
     const resp = await apiBase.post("/item/new-order", newOrderToSubmit);
     if (resp) {
-      await dispatch(onResetCart());
+      updateQuantityInStockAfterPlaceOrder()
       setValue("client", "");
       setNewOrder(false);
       index === 0 && openNotificationWithIcon();
-      index++
+      index++;
     }
   };
 
@@ -259,10 +276,6 @@ const PaginaPrincipalVentas = () => {
                       </Typography>
                     </Button>
                   </Popconfirm>
-                  {/* <Popconfirm
-                    title="Esta lista para procesar?"
-                    onConfirm={() => handleSubmitOrder()}
-                  > */}
                   <Button
                     style={{
                       width: "fit-content",
