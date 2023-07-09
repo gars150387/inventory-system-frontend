@@ -8,12 +8,13 @@ import { Icon } from "@iconify/react";
 import NewOrder from "./NewOrder";
 import { useDispatch, useSelector } from "react-redux";
 import { onAddToOrder } from "../../store/slices/orderSlice";
+import { onAddTocartRef } from "../../store/slices/cartRefSlice";
 
 const ItemsInTable = () => {
   const [item, setItem] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
-  const { order } = useSelector(state => state.order)
+  const { order } = useSelector((state) => state.order);
   const searchInput = useRef(null);
   const dispatch = useDispatch();
   const inventoryQuery = useQuery({
@@ -137,13 +138,16 @@ const ItemsInTable = () => {
           text
         )
     });
-    const handleItemInCart = (record) => {
-        if(order.find(item => item._id === record._id)){
-            return alert("Articulo existe en la orden, favor modificar la cantidad")
-        }
+    const handleItemInCart = async (record) => {
+      if (order.find((item) => item._id === record._id)) {
+        return alert(
+          "Articulo existe en la orden, favor modificar la cantidad"
+        );
+      }
       let result = [...item, record];
       setItem(result);
       dispatch(onAddToOrder(record));
+      dispatch(onAddTocartRef(record));
     };
     const columns = [
       {
