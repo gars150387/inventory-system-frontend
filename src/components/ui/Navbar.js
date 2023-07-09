@@ -95,8 +95,8 @@ export const Navbar = () => {
           )}
           {adminUser.role === "Administrador" ||
           adminUser.role === "Encargado" ? (
-            <NavLink to="./feed_stock">
-              <a href="./feed_stock" className="nav-link">
+            <NavLink to="./inventario">
+              <a href="./inventario" className="nav-link">
                 Ingresar Inventario
               </a>
             </NavLink>
