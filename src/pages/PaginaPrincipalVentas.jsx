@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { Icon } from "@iconify/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Grid, OutlinedInput, Typography } from "@mui/material";
 import { apiBase } from "../components/api/Api";
 import ItemsInTable from "../components/sale/ItemsInTable";
@@ -27,10 +27,6 @@ const PaginaPrincipalVentas = () => {
     queryFn: () => apiBase.get("/admin/admin-user")
   });
 
-  const newOrderSubmitQuery = useMutation({
-    queryFn: (newOrderFormat) => apiBase.post("/item/new-order", newOrderFormat)
-  });
-
   const totalAPagar = () => {
     let firstResult = [];
     let index = 0;
@@ -48,11 +44,20 @@ const PaginaPrincipalVentas = () => {
     return sumWithInitial;
   };
 
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type) => {
+    api.open({
+      message: "Orden emitida"
+    });
+  };
+
   const handleCancelOrder = () => {
     dispatch(onResetCart());
     setNewOrder(false);
   };
+
   const handleSubmitOrder = async () => {
+    let index = 0
     let newOrderToSubmit = {
       clientName: watch("client"),
       salePerson: `${adminUser.email}`,
@@ -60,23 +65,16 @@ const PaginaPrincipalVentas = () => {
       total: totalAPagar()
     };
 
-    await apiBase.post("/item/new-order", newOrderToSubmit);
-    await dispatch(onResetCart());
-    setValue("client", "");
-    setNewOrder(false);
+    const resp = await apiBase.post("/item/new-order", newOrderToSubmit);
+    if (resp) {
+      await dispatch(onResetCart());
+      setValue("client", "");
+      setNewOrder(false);
+      index === 0 && openNotificationWithIcon();
+      index++
+    }
   };
 
-  const [api, contextHolder] = notification.useNotification();
-  const openNotificationWithIcon = (type) => {
-    api.open({
-      message: "Orden emitida"
-    });
-  };
-  const displayNotification = useCallback(() => {
-    openNotificationWithIcon();
-  }, [newOrderSubmitQuery.isSuccess]);
-  displayNotification();
-  
   if (adminUserList.isLoading) return <p>Cargando usuarios...</p>;
   if (adminUserList.data) {
     return (

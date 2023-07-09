@@ -369,8 +369,8 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
               >
                 Guardar
               </Typography>
-              <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-                <a>Cancel</a>
+              <Popconfirm title="Sure to cancel?" onConfirm={()=> cancel()}>
+                <p>Cancel</p>
               </Popconfirm>
             </span>
           ) : (

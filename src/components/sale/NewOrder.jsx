@@ -170,35 +170,35 @@ const NewOrder = () => {
         const editable = isEditing(record);
         return editable ? (
           <span>
-            <Typography.Link
+            <Typography
               onClick={() => save(record)}
               style={{
                 marginRight: 8
               }}
             >
               Guardar
-            </Typography.Link>
+            </Typography>
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
               <a>Cancel</a>
             </Popconfirm>
           </span>
         ) : (
           <>
-            <Typography.Link
+            <Typography
               style={{ marginRight: "1rem" }}
               disabled={editingKey !== ""}
               onClick={() => edit(record)}
             >
               Editar Cant
-            </Typography.Link>
-            <Typography.Link disabled={editingKey !== ""}>
+            </Typography>
+            <Typography disabled={editingKey !== ""}>
               <Popconfirm
                 title="Sure to cancel?"
                 onConfirm={() => handleDelete(record)}
               >
                 Borrar
               </Popconfirm>
-            </Typography.Link>
+            </Typography>
           </>
         );
       }
