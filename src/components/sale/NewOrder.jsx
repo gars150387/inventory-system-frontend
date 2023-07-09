@@ -179,7 +179,7 @@ const NewOrder = () => {
               Guardar
             </Typography>
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
+              <p>Cancel</p>
             </Popconfirm>
           </span>
         ) : (
