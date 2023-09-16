@@ -59,7 +59,7 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const { role } = adminUser;
-  const { register, setValue, watch } = useForm();
+  const { register, setValue, watch, handleSubmit } = useForm();
   const inventoryQuery = useQuery({
     queryKey: ["inventory"],
     queryFn: () => apiBase.get("/item/inventory"),
@@ -71,7 +71,7 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
   const updateItemInStockMutation = useMutation({
     mutationFn: (newData) =>
       apiBase.put(`/item/edit-item-quantity/${newData._id}`, newData),
-      onSuccess: () => queryClient.invalidateQueries(["inventory"])
+    onSuccess: () => queryClient.invalidateQueries(["inventory"])
   });
 
   const deleteItemInStockMutation = useMutation({
@@ -120,7 +120,6 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
           };
           updateItemInStockMutation.mutate(newDataTemplate);
           setEditingKey("");
-
         } else {
           setData(newData);
           setEditingKey("");
@@ -315,8 +314,7 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
         sortDirections: ["descend", "ascend"],
         typeof: Number,
         editable:
-          (role === "Administrador" && true) ||
-          (role === "Encargado" && true)
+          (role === "Administrador" && true) || (role === "Encargado" && true)
       },
       {
         title: "Costo",
@@ -369,7 +367,7 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
               >
                 Guardar
               </Typography>
-              <Popconfirm title="Sure to cancel?" onConfirm={()=> cancel()}>
+              <Popconfirm title="Sure to cancel?" onConfirm={() => cancel()}>
                 <p>Cancel</p>
               </Popconfirm>
             </span>
@@ -417,23 +415,22 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
       };
     });
 
-    const handleSubmitNewItem = async (event) => {
-      event.preventDefault();
+    const handleSubmitNewItem = async (data) => {
+ 
       let newData = {
-        name: watch("name"),
-        brand: watch("brand"),
-        size: parseInt(watch("size")),
-        quantity: parseInt(watch("quantity")),
-        resume: `${watch("resume")}, ${watch("name")}, ${watch(
-          "brand"
-        )}, ${watch("size")}, ${watch("color")}, ${watch("quantity")}, ${watch(
-          "cost"
-        )}, ${watch("price")}`,
-        color: watch("color"),
-        cost: parseInt(watch("cost")),
-        price: parseInt(watch("price"))
+        ...data,
+        resume: `${data.resume}, ${watch("name")}, ${watch("brand")}, ${watch(
+          "size"
+        )}, ${watch("color")}, ${watch("quantity")}, ${watch("cost")}, ${watch(
+          "price"
+        )}`,
+        cost: parseInt(data.cost),
+        size: parseInt(data.size),
+        price: parseInt(data.price),
+        quantity: parseInt(data.quantity)
       };
-      const resp = await apiBase.post(`/item/new-order`, newData);
+
+      const resp = await apiBase.post(`/item/new_item`, newData);
       if (resp) {
         setValue("brand", "");
         setValue("name", "");
@@ -446,7 +443,6 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
         setNewItem(false);
       }
     };
-    // addNewItemInStockMutation.mutate(data)
 
     const handleCancelAction = () => {
       setValue("brand", "");
@@ -495,7 +491,7 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
                   Formuario para ingresar nuevo articulo
                 </Typography>
               </Grid>
-              <form>
+              <form onSubmit={handleSubmit(handleSubmitNewItem)}>
                 <Grid
                   gap={1}
                   justifyContent={"space-around"}
@@ -684,7 +680,12 @@ const ItemInTableInStock = ({ newItem, setNewItem }) => {
                   </Grid>
                   <Grid marginY={1} marginX={"auto"} gap={5} item xs={12}>
                     <Button onClick={handleCancelAction}>Cancelar</Button>
-                    <Button onClick={handleSubmitNewItem}>Ingresar</Button>
+                    <Button
+                      // onClick={handleSubmitNewItem}
+                      htmlType="submit"
+                    >
+                      Ingresar
+                    </Button>
                   </Grid>
                 </Grid>
               </form>
