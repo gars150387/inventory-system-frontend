@@ -5,6 +5,7 @@ import { onAddNewAdminUser } from "../../store/slices/adminSlice";
 import { useDispatch } from "react-redux";
 import { Grid } from "@mui/material";
 import { onResetCart } from "../../store/slices/orderSlice";
+import { persistor } from "../../store/store";
 
 export const Navbar = () => {
   const { adminUser } = useSelector((state) => state.admin);
@@ -13,6 +14,7 @@ export const Navbar = () => {
 
   const handleSignOut = async (event) => {
     event.preventDefault();
+    persistor.purge()
     dispatch(
       onAddNewAdminUser({
         name: "",

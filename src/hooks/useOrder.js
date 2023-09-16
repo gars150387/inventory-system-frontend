@@ -16,7 +16,6 @@ export const useOrder = () => {
         total: totalToDisplay,
       });
       if (data) {
-        console.log("🚀 ~ file: useOrder.js:19 ~ newOrderCall ~ data", data);
         setOrderProcessed(data);
         setCurrentOrderProcessed(data.order)
         setShowReceipt('display')
