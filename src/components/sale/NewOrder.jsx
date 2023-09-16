@@ -71,7 +71,7 @@ const NewOrder = () => {
   const isEditing = (record) => record._id === editingKey;
   const edit = (record) => {
     form.setFieldsValue({
-      quantity: "",
+      initalValue: "",
       ...record
     });
     setEditingKey(record._id);
@@ -84,7 +84,7 @@ const NewOrder = () => {
       const row = await form.validateFields();
       const newData = [...order];
       const quantityRef = await inventoryQuery?.data?.data?.inventory?.find((item) => item._id === key._id);
-      if (row.quantity > quantityRef.quantity) {
+      if (parseInt(row.initialValue) > quantityRef.quantity) {
         return alert("Cantidad superior a inventario");
       }
       const index = await order?.findIndex((item) => item._id === key._id);
@@ -157,11 +157,11 @@ const NewOrder = () => {
     },
     {
       title: "Cantidad",
-      dataIndex: "quantity",
+      dataIndex: "initialValue",
       width: "6%",
       editable: true,
-      //   ...getColumnSearchProps("quantity"),
-      sorter: (a, b) => a.quantity.length - b.quantity.length,
+      //   ...getColumnSearchProps("initialValue"),
+      sorter: (a, b) => a.initialValue.length - b.initialValue.length,
       sortDirections: ["descend", "ascend"]
     },
     {
