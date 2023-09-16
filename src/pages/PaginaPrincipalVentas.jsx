@@ -41,7 +41,7 @@ const PaginaPrincipalVentas = () => {
     let index = 0;
     let noDeleteItem = 0;
     for (let data of order) {
-      let check = data.quantity * data.price;
+      let check = data.initialValue * data.price;
       firstResult.splice(index, noDeleteItem, check);
       index++;
     }
