@@ -8,7 +8,8 @@ import {
   PAUSE,
   PERSIST,
   PURGE,
-  REGISTER
+  REGISTER,
+  persistStore
 } from "redux-persist";
 import orderSlice from "./slices/orderSlice";
 import cartRefSlice from "./slices/cartRefSlice";
@@ -27,7 +28,7 @@ const reducers = combineReducers({
 
 const persistedReducers = persistReducer(persistConfig, reducers);
 
-export const store = configureStore({
+const store = configureStore({
   reducer: persistedReducers,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -36,3 +37,7 @@ export const store = configureStore({
       }
     })
 });
+
+const persistor = persistStore(store);
+
+export {store, persistor}
