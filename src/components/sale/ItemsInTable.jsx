@@ -144,10 +144,15 @@ const ItemsInTable = () => {
           "Articulo existe en la orden, favor modificar la cantidad"
         );
       }
-      let result = [...item, record];
+      const newItemAdded = {
+        ...record,
+        initialValue: 0
+      };
+      let result = [...item, newItemAdded];
+
       setItem(result);
-      dispatch(onAddToOrder(record));
-      dispatch(onAddTocartRef(record));
+      dispatch(onAddToOrder(newItemAdded));
+      dispatch(onAddTocartRef(newItemAdded));
     };
     const columns = [
       {
