@@ -33,8 +33,7 @@ const PaginaPrincipalVentas = () => {
 
   const updateQuantityInStockMutation = useMutation({
     mutationFn: (data) =>
-      apiBase.put(`/item/edit-item-quantity/${data._id}`, data),
-    onSuccess: () => queryClient.invalidateQueries(["listOfAdminUser", "inventory"])
+      apiBase.put(`/item/edit-item-quantity/${data._id}`, data)
   });
   const totalAPagar = () => {
     let firstResult = [];
@@ -69,8 +68,19 @@ const PaginaPrincipalVentas = () => {
   const updateQuantityInStockAfterPlaceOrder = async () => {
     for (let data of order) {
       const checkRef = cartRef.find((item) => item._id === data._id);
-      let newQuantityToSave = checkRef.quantity - data.quantity;
-      updateQuantityInStockMutation.mutate({ ...data, quantity: newQuantityToSave });
+      let newQuantityToSave = data.quantity - parseInt(checkRef.initialValue);
+      updateQuantityInStockMutation.mutate({
+        ...data,
+        quantity: newQuantityToSave,
+        initialValue: 0
+      });
+      if (
+        (updateQuantityInStockMutation.isIdle ||
+          updateQuantityInStockMutation.isSuccess) &&
+        !updateQuantityInStockMutation.isError
+      ) {
+        queryClient.invalidateQueries("inventory");
+      }
     }
   };
   const handleSubmitOrder = async () => {
@@ -84,9 +94,10 @@ const PaginaPrincipalVentas = () => {
 
     const resp = await apiBase.post("/item/new-order", newOrderToSubmit);
     if (resp) {
-      updateQuantityInStockAfterPlaceOrder()
+      updateQuantityInStockAfterPlaceOrder();
       setValue("client", "");
-      setNewOrder(false);
+      handleCancelOrder();
+      queryClient.invalidateQueries("inventory");
       index === 0 && openNotificationWithIcon();
       index++;
     }
