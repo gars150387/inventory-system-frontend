@@ -16,6 +16,7 @@ import {
 import { Grid } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { apiBase } from "../api/Api";
+import { onAddTocartRef, onEditItemIncartRef } from "../../store/slices/cartRefSlice";
 
 const EditableCell = ({
   editing,
@@ -54,15 +55,15 @@ const EditableCell = ({
 //component
 const NewOrder = () => {
   const { order } = useSelector((state) => state.order);
+  const { cartRef } = useSelector((state) => state.cartRef);
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState("");
 
-
   const inventoryQuery = useQuery({
-    queryKey:[['inventoryList']],
-    queryFn:() => apiBase.get("/item/inventory")
-  })
+    queryKey: [["inventoryList"]],
+    queryFn: () => apiBase.get("/item/inventory")
+  });
   const handleDelete = (key) => {
     const newData = order?.filter((article) => article._id !== key._id);
     dispatch(onDeleteItemInCart(newData));
@@ -83,18 +84,31 @@ const NewOrder = () => {
     try {
       const row = await form.validateFields();
       const newData = [...order];
-      const quantityRef = await inventoryQuery?.data?.data?.inventory?.find((item) => item._id === key._id);
+      const newDataCart = [...cartRef];
+      const quantityRef = await inventoryQuery?.data?.data?.inventory?.find(
+        (item) => item._id === key._id
+      );
       if (parseInt(row.initialValue) > quantityRef.quantity) {
         return alert("Cantidad superior a inventario");
       }
       const index = await order?.findIndex((item) => item._id === key._id);
-      if (index > -1) {
+      const indexCart = await cartRef?.findIndex(
+        (item) => item._id === key._id
+      );
+      if (index > -1 && indexCart > -1) {
         const item = newData[index];
+        const itemCart = newDataCart[indexCart];
         newData.splice(index, 1, {
           ...item,
           ...row
         });
+        newDataCart.splice(indexCart, 1, {
+          ...itemCart,
+          ...row
+        });
         dispatch(onEditItemInOrder(newData));
+        dispatch(onEditItemIncartRef(newDataCart));
+
         setEditingKey("");
       } else {
         newData.push(row);
