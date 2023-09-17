@@ -16,7 +16,6 @@ import {
 import { Grid } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { apiBase } from "../api/Api";
-import { onAddTocartRef, onEditItemIncartRef } from "../../store/slices/cartRefSlice";
 
 const EditableCell = ({
   editing,
